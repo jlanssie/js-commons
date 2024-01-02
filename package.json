@@ -1,0 +1,32 @@
+{
+  "name": "@jlanssie/js-commons",
+  "version": "1.0.0",
+  "description": "JavaScript Utilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm publish"
+  },
+  "keywords": [
+    "javascript"
+  ],
+  "author": "Jeremy Lanssiers",
+  "license": "GNU GPLv3",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jlanssie/js-commons.git"
+  },
+  "devDependencies": {
+    "@types/node": "^16.10.2",
+    "eslint": "^6.1.3",
+    "typescript": "~4.4.3"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=8"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@jlanssie"
+  }
+}

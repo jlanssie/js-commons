@@ -1,2 +1,2 @@
-# js-commons
+# JS Commons
 JavaScript utilities.

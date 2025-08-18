@@ -1,5 +1,5 @@
 // UrlUtils.test.ts
-import UrlUtils from "./../src/urlUtils";
+import UrlUtil from "../src/url.util";
 
 Object.defineProperty(window, "location", {
   value: new URL("http://example.com?foo=bar#test"),
@@ -9,19 +9,19 @@ Object.defineProperty(window, "location", {
 describe("Url utilities", () => {
   describe("getProtocol()", () => {
     test("getProtocol() should return the correct protocol", () => {
-      expect(UrlUtils.getProtocol()).toBe("http:");
+      expect(UrlUtil.getProtocol()).toBe("http:");
     });
   });
 
   describe("getHostName()", () => {
     test("getHostName() should return the correct hostname", () => {
-      expect(UrlUtils.getHostName()).toBe("example.com");
+      expect(UrlUtil.getHostName()).toBe("example.com");
     });
   });
 
   describe("getUrlParams()", () => {
     test("getUrlParams() should return the correct URLSearchParams object", () => {
-      const params = UrlUtils.getUrlParams();
+      const params = UrlUtil.getUrlParams();
       expect(params instanceof URLSearchParams).toBe(true);
       expect(params.get("foo")).toBe("bar");
     });
@@ -29,7 +29,7 @@ describe("Url utilities", () => {
 
   describe("getAnchor()", () => {
     test("getAnchor should return the correct anchor (fragment identifier)", () => {
-      expect(UrlUtils.getAnchor()).toBe("test");
+      expect(UrlUtil.getAnchor()).toBe("test");
     });
   });
 });

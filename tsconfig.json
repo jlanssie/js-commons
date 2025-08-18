@@ -1,18 +1,21 @@
 {
   "compilerOptions": {
-    "lib": ["es6", "dom"],
-    "module": "commonjs",
-    "noImplicitReturns": true,
-    "esModuleInterop": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["esnext"],
     "outDir": "dist",
+    "rootDir": "src",
     "sourceMap": true,
-    "target": "es6",
     "declaration": true,
-    "types": [
-        "node", "jest"
-      ],
     "moduleResolution": "node",
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
-  "compileOnSave": true,
   "include": ["src"]
 }

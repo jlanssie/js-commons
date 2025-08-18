@@ -1,24 +1,36 @@
-# JS Commons
+# JS Commons (Work in progress)
 
-JavaScript utils.
+JS Commons is a library with common utilities ifor modern JavaScript & TypeScript.
 
 ## Installation
 
-Create an `.npmrc` file in your repository.
-Add the following content.
+Use JavaScript Package Manager [npm](https://www.npmjs.com/) to install JS Commons.
 
-````bash
-@jlanssie:registry=https://npm.pkg.github.com
-````
+```bash
+npm install
+```
 
 ## Usage
 
-Import the package in any JavaScript or TypeScript file. 
+Create an `.npmrc` file in your repository and add the following content.
 
-````javascript
+```bash
+@jlanssie:registry=https://npm.pkg.github.com
+```
+
+Import the package in any JavaScript or TypeScript file.
+
+```javascript
 import { UrlUtils } from "@jlanssie/js-commons";
-````
+```
 
-## Utils
+## Contributing
 
-Use the following utils: ObjectUtils,  StringUtils, TimeUtils, UrlUtils
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[GNU GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)

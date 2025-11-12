@@ -21,7 +21,7 @@ Create an `.npmrc` file in your repository and add the following content.
 Import the package in any JavaScript or TypeScript file.
 
 ```javascript
-import { UrlUtils } from "@jlanssie/js-commons";
+import { UrlUtils } from '@jlanssie/js-commons';
 ```
 
 ## Contributing

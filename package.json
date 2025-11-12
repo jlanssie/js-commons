@@ -24,8 +24,8 @@
     "type": "git",
     "url": "git+https://github.com/jlanssie/js-commons.git"
   },
-  "author": "Jeremy Lanssiers",
   "license": "GPL-3.0-or-later",
+  "author": "Jeremy Lanssiers",
   "devDependencies": {
     "@types/node": "^16.10.2",
     "jest-environment-jsdom": "^29.7.0",

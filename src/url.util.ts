@@ -1,6 +1,7 @@
 /**
  * Utility class for working with URL-related operations.
  */
+
 'use strict';
 
 class UrlUtil {

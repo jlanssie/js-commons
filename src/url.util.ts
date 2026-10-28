@@ -1,34 +1,36 @@
 /**
- * Utility class for working with URL-related operations.
+ * Utility class for working with the current URL.
  */
 
 'use strict';
 
 class UrlUtil {
   /**
-   * Retrieves the protocol of the current URL, e.g.: 'http:', 'https:'
+   * Returns the protocol of the current URL, such as `http:` or `https:`.
    */
   static getProtocol(): string {
     return globalThis.location.protocol;
   }
 
   /**
-   * Retrieves the hostname (domain) of the current URL, e.g.: 'www.google.com'
+   * Returns the hostname of the current URL, such as `www.example.com`.
    */
   static getHostName(): string {
     return globalThis.location.hostname;
   }
 
   /**
-   * Retrieves the URL parameters as a URLSearchParams object from the current URL, e.g.: 'https://www.google.com/?q=searchString' => '?q=searchString'
+   * Returns the query parameters from the current URL as a `URLSearchParams`
+   * object. For example, `https://www.example.com/?q=searchString` returns
+   * `?q=searchString`.
    */
   static getUrlParams(): URLSearchParams {
     return new URLSearchParams(globalThis.location.search);
   }
 
   /**
-   * Retrieves the anchor (fragment identifier) from the current URL, e.g.: 'https://www.google.com/#anchor' => 'anchor'
-   * Note: Excludes the '#' character from the result.
+   * Returns the fragment identifier from the current URL without the leading
+   * `#`. For example, `https://www.example.com/#anchor` returns `anchor`.
    */
   static getAnchor(): string {
     return globalThis.location.hash.substring(1);

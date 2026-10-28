@@ -1,1 +1,1 @@
-export { default as UrlUtils } from './url.util';
+export { default as UrlUtils } from './url.util.ts';

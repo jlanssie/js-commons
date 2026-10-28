@@ -1,35 +1,37 @@
-// UrlUtils.test.ts
-import UrlUtil from '../src/url.util';
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
-Object.defineProperty(window, 'location', {
-  value: new URL('http://example.com?foo=bar#test'),
+import UrlUtil from '../src/url.util.ts';
+
+Object.defineProperty(globalThis, 'location', {
   configurable: true,
+  value: new URL('http://example.com/?foo=bar#test'),
 });
 
 describe('Url utilities', () => {
   describe('getProtocol()', () => {
-    test('getProtocol() should return the correct protocol', () => {
-      expect(UrlUtil.getProtocol()).toBe('http:');
+    it('should return the correct protocol', () => {
+      assert.equal(UrlUtil.getProtocol(), 'http:');
     });
   });
 
   describe('getHostName()', () => {
-    test('getHostName() should return the correct hostname', () => {
-      expect(UrlUtil.getHostName()).toBe('example.com');
+    it('should return the correct hostname', () => {
+      assert.equal(UrlUtil.getHostName(), 'example.com');
     });
   });
 
   describe('getUrlParams()', () => {
-    test('getUrlParams() should return the correct URLSearchParams object', () => {
+    it('should return the correct URLSearchParams object', () => {
       const params = UrlUtil.getUrlParams();
-      expect(params instanceof URLSearchParams).toBe(true);
-      expect(params.get('foo')).toBe('bar');
+      assert.ok(params instanceof URLSearchParams);
+      assert.equal(params.get('foo'), 'bar');
     });
   });
 
   describe('getAnchor()', () => {
-    test('getAnchor should return the correct anchor (fragment identifier)', () => {
-      expect(UrlUtil.getAnchor()).toBe('test');
+    it('should return the correct anchor (fragment identifier)', () => {
+      assert.equal(UrlUtil.getAnchor(), 'test');
     });
   });
 });

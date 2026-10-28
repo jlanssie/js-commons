@@ -5,7 +5,7 @@
     "forceConsistentCasingInFileNames": true,
     "lib": ["esnext", "dom"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -16,7 +16,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "ESNext",
-    "types": ["jest", "node"]
+    "types": ["node"]
   },
   "include": ["src"]
 }

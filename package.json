@@ -2,48 +2,35 @@
   "name": "@jlanssie/js-commons",
   "version": "1.1.2",
   "description": "JavaScript Utilities",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "test": "jest",
-    "package": "npm run build && npm run test",
-    "deploy": "npm publish",
-    "prettier": "npm run format",
-    "prettier:verbose": "prettier --write .",
-    "prettier:check": "prettier --check .",
-    "format": "prettier --write . --log-level silent",
-    "lint": "eslint .",
-    "prepare": "husky"
-  },
   "keywords": [
     "javascript"
   ],
+  "author": "Jeremy Lanssiers",
+  "license": "GPL-3.0-or-later",
+  "main": "dist/index.js",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm publish",
+    "format": "prettier --write . --log-level silent",
+    "package": "npm run build && npm run test",
+    "test": "node --test \"test/**/*.spec.ts\""
+  },
   "homepage": "https://github.com/jlanssie/js-commons#readme",
   "bugs": {
     "url": "https://github.com/jlanssie/js-commons/issues"
   },
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jlanssie/js-commons.git"
   },
-  "license": "GPL-3.0-or-later",
-  "author": "Jeremy Lanssiers",
   "devDependencies": {
-    "@types/node": "^16.10.2",
-    "jest-environment-jsdom": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "@types/jest": "^29.5.11",
-    "eslint": "^9.33.0",
-    "husky": "^9.1.7",
-    "jest": "^30.0.5",
-    "prettier": "3.6.2",
-    "typescript": "5.5.4",
-    "typescript-eslint": "^8.39.1"
+    "@types/node": "^26.6.5",
+    "typescript": "^6.0.3"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=24"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@jlanssie"

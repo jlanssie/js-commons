@@ -4,14 +4,14 @@ husky_color=$(tput setaf 117)
 husky_reset=$'\e[0m'
 
 # Run Prettier
-echo "\n${husky_color}Running Prettier ...${husky_reset}"
+echo "${husky_color}Running Prettier ...${husky_reset}"
 npm run prettier:check || { echo "Error: Prettier check failed. Did you forget to run Prettier?" >&2; exit 1; }
 
 # Run Linters
-echo "\n${husky_color}Running Linters ...${husky_reset}"
+echo "${husky_color}Running Linters ...${husky_reset}"
 npm run lint || { echo "Error: Linters failed." >&2; exit 1; }
 
 # Commit changes
-echo "\n${husky_color}Committing changes ...${husky_reset}\n"
+echo "${husky_color}Committing changes ...${husky_reset}"
 
 exit 0

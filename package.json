@@ -9,6 +9,7 @@
     "test": "jest",
     "package": "npm run build && npm run test",
     "deploy": "npm publish",
+    "prettier": "npm run format",
     "format": "prettier --write . --log-level silent",
     "lint": "eslint ."
   },

@@ -10,6 +10,8 @@
     "package": "npm run build && npm run test",
     "deploy": "npm publish",
     "prettier": "npm run format",
+    "prettier:verbose": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "format": "prettier --write . --log-level silent",
     "lint": "eslint .",
     "prepare": "husky"

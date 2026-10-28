@@ -10,6 +10,6 @@ export default defineConfig([
     },
   },
   {
-    ignores: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    ignores: ['**/*.js', '**/*.mjs', '**/*.cjs', 'node_modules/', 'dist/'],
   },
 ]);

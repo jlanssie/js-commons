@@ -1,13 +1,13 @@
-# JS Commons (Work in progress)
+# JS Commons
 
-JS Commons is a library with common utilities ifor modern JavaScript & TypeScript.
+JS Commons is a library with common utilities for modern JavaScript & TypeScript.
 
 ## Installation
 
 Use JavaScript Package Manager [npm](https://www.npmjs.com/) to install JS Commons.
 
 ```bash
-npm install
+npm install @jlanssie/js-commons
 ```
 
 ## Usage
@@ -21,7 +21,12 @@ Create an `.npmrc` file in your repository and add the following content.
 Import the package in any JavaScript or TypeScript file.
 
 ```javascript
-import { UrlUtils } from '@jlanssie/js-commons';
+import { ArrayUtils, BooleanUtils, ClassUtils, CollectionUtils, EnumUtils, LocaleUtils, ObjectUtils, StringUtils, UrlUtils } from '@jlanssie/js-commons';
+
+StringUtils.isBlank('  '); // true
+ArrayUtils.add([1, 2], 3); // [1, 2, 3]
+CollectionUtils.intersection([1, 2], [2, 3]); // [2]
+UrlUtils.getProtocol();
 ```
 
 ## Contributing

@@ -1,9 +1,3 @@
-/**
- * Utility class for working with the current URL.
- */
-
-'use strict';
-
 class UrlUtil {
   /**
    * Returns the protocol of the current URL, such as `http:` or `https:`.

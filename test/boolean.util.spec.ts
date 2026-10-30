@@ -43,4 +43,27 @@ describe('BooleanUtil', () => {
   it('toStringYesNo', () => assert.equal(BooleanUtil.toStringYesNo(false), 'no'));
   it('values', () => assert.deepEqual(BooleanUtil.values(), [false, true]));
   it('xor', () => assert.equal(BooleanUtil.xor(true, false), true));
+  it('handles null, nested, and invalid conversion paths', () => {
+    assert.throws(() => BooleanUtil.and(), /must not be empty/);
+    assert.equal(BooleanUtil.and([true, true] as never), true);
+    assert.equal(BooleanUtil.toBoolean(null), false);
+    assert.equal(BooleanUtil.toBoolean('unknown'), false);
+    assert.equal(BooleanUtil.toBoolean('no', 'yes', 'no'), false);
+    assert.throws(() => BooleanUtil.toBoolean('maybe', 'yes', 'no'));
+    assert.equal(BooleanUtil.toBooleanObject(null), null);
+    assert.equal(BooleanUtil.toBooleanObject(false), false);
+    assert.equal(BooleanUtil.toBooleanObject('no'), false);
+    assert.equal(BooleanUtil.toBooleanObject('other'), null);
+    assert.equal(BooleanUtil.toBooleanObjectWithValues('no', 'yes', 'no', null), false);
+    assert.equal(BooleanUtil.toBooleanObjectWithValues(null, 'yes', 'no', null), null);
+    assert.throws(() => BooleanUtil.toBooleanObjectWithValues('maybe', 'yes', 'no', null));
+    assert.equal(BooleanUtil.toBooleanObject(0, 1, 0, -1), false);
+    assert.equal(BooleanUtil.toBooleanObject(-1, 1, 0, -1), null);
+    assert.throws(() => BooleanUtil.toBooleanObject(2, 1, 0, -1));
+    assert.equal(BooleanUtil.toBoolean(true), true);
+    assert.equal(BooleanUtil.toBoolean({}), false);
+    assert.throws(() => BooleanUtil.oneHot(), /must not be empty/);
+    assert.throws(() => BooleanUtil.or(), /must not be empty/);
+    assert.throws(() => BooleanUtil.xor(), /must not be empty/);
+  });
 });

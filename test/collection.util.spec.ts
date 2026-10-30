@@ -148,4 +148,74 @@ describe('CollectionUtil', () => {
     ));
   it('union', () => assert.deepEqual(CollectionUtil.union([1, 1], [1, 2]), [1, 1, 2]));
   it('unmodifiableCollection', () => assert.equal(Object.isFrozen(CollectionUtil.unmodifiableCollection([1])), true));
+  it('handles collection implementations and error paths', () => {
+    assert.deepEqual(CollectionUtil.emptyIfNull([1]), [1]);
+    assert.equal(CollectionUtil.cardinality(1, null), 0);
+    assert.deepEqual(
+      CollectionUtil.collect({ 0: 'a', length: 1 }, (value) => value),
+      ['a'],
+    );
+    assert.deepEqual(
+      CollectionUtil.collect(new Map([['a', 1]]), (entry) => entry),
+      [['a', 1]],
+    );
+    const set = new Set<number>();
+    assert.equal(CollectionUtil.addAll(set, 1, 1), true);
+    assert.equal(CollectionUtil.addAll(set, 1), false);
+    assert.throws(() => CollectionUtil.addAll(null, 1));
+    assert.throws(() => CollectionUtil.addAll({} as never, 1));
+    const pushOnly = {
+      values: [] as number[],
+      push(value: number) {
+        this.values.push(value);
+      },
+    };
+    assert.equal(CollectionUtil.addAll(pushOnly as never, 1), true);
+    assert.equal(CollectionUtil.size({ size: 2 }), 2);
+    assert.equal(CollectionUtil.size({ length: 2 }), 2);
+    assert.equal(CollectionUtil.size(new Set([1, 2])), 2);
+    assert.equal(CollectionUtil.size(new Map([['a', 1]])), 1);
+    assert.equal(CollectionUtil.size(new Uint8Array([1, 2])), 2);
+    assert.equal(CollectionUtil.size({}), 0);
+    assert.equal(typeof CollectionUtil.hashCode(['text']), 'number');
+    assert.equal(typeof CollectionUtil.hashCode([{}]), 'number');
+    assert.deepEqual(CollectionUtil.collate([1, 1], [2], false), [1, 2]);
+    assert.deepEqual(
+      CollectionUtil.collate([1, 1], [2], (left, right) => left - right, false),
+      [1, 2],
+    );
+    const setToFilter = new Set([1, 2]);
+    assert.equal(
+      CollectionUtil.filter(setToFilter, (value) => value === 1),
+      true,
+    );
+    assert.deepEqual([...setToFilter], [1]);
+    assert.equal(
+      CollectionUtil.filter(new Set([1]), () => true),
+      false,
+    );
+    assert.equal(
+      CollectionUtil.filter({} as never, () => true),
+      false,
+    );
+    assert.throws(() => CollectionUtil.extractSingleton([]));
+    assert.equal(CollectionUtil.get('abc', 1), 'b');
+    assert.equal(CollectionUtil.get([1], -1), null);
+    assert.equal(CollectionUtil.isFull({ isFull: () => false } as never), false);
+    assert.equal(CollectionUtil.maxSize({ maxSize: () => 4 } as never), 4);
+    assert.equal(CollectionUtil.maxSize({}), -1);
+    const proxy = CollectionUtil.predicatedCollection([1], (value: number) => value > 0);
+    assert.equal(proxy.length, 1);
+    assert.throws(() => CollectionUtil.removeCount([1], -1, 1));
+    assert.throws(() => CollectionUtil.removeCount([1], 0, -1));
+    assert.throws(() => CollectionUtil.removeCount([1], 1, 1));
+    assert.throws(() => CollectionUtil.removeRange([1], 1, 0));
+    assert.deepEqual(CollectionUtil.removeCount(new Set([1, 2]), 0, 1), [1]);
+    assert.deepEqual(
+      CollectionUtil.subtract([1, 2], [2], () => false),
+      [1, 2],
+    );
+    assert.equal(CollectionUtil.containsAny([1], [2]), false);
+    assert.equal(CollectionUtil.countMatches([1], undefined as never), 0);
+  });
 });

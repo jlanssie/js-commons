@@ -77,4 +77,70 @@ describe('ObjectUtil', () => {
   it('wait', async () => {
     await ObjectUtil.wait({}, 0);
   });
+  it('handles value types, nulls, and validation paths', () => {
+    assert.equal(ObjectUtil.NULL.toString(), 'null');
+    assert.equal(ObjectUtil.identityHashCodeHex(null), null);
+    assert.equal(ObjectUtil.identityToString(null), null);
+    const sameObject = {};
+    ObjectUtil.identityHashCodeHex(sameObject);
+    assert.equal(ObjectUtil.identityHashCodeHex(sameObject), ObjectUtil.identityHashCodeHex(sameObject));
+    assert.equal(ObjectUtil.clone(null), null);
+    assert.equal(ObjectUtil.clone(new Uint8Array([1]))?.[0], 1);
+    assert.deepEqual(ObjectUtil.clone([1, 2]), [1, 2]);
+    assert.deepEqual(ObjectUtil.clone({ clone: () => ({ value: 1 }) }), { value: 1 });
+    assert.equal(ObjectUtil.clone({ callback: () => 1 }), null);
+    assert.equal(ObjectUtil.clone(1), null);
+    assert.equal(ObjectUtil.hashCode(true), 1231);
+    assert.equal(ObjectUtil.hashCode(null), 0);
+    assert.equal(typeof ObjectUtil.hashCode({}), 'number');
+    assert.equal(ObjectUtil.hashCode(NaN), 0x7ff80000);
+    assert.equal(ObjectUtil.hashCode(Infinity), 0x7ff00000);
+    assert.equal(ObjectUtil.hashCode(-Infinity), 0xfff00000);
+    assert.equal(typeof ObjectUtil.hashCode(1.5), 'number');
+    assert.equal(typeof ObjectUtil.hashCode(1n), 'number');
+    assert.equal(typeof ObjectUtil.hashCode(Symbol('x')), 'number');
+    assert.equal(typeof ObjectUtil.hashCode(() => 1), 'number');
+    assert.equal(ObjectUtil.compare(null, null), 0);
+    assert.equal(ObjectUtil.compare(null, 1, true), 1);
+    assert.equal(ObjectUtil.compare(1, null, true), -1);
+    assert.equal(ObjectUtil.compare(1, 2), -1);
+    assert.equal(ObjectUtil.compare(1, 1), 0);
+    assert.equal(ObjectUtil.compare('a', 'b'), -1);
+    assert.equal(ObjectUtil.compare({}, {}), 1);
+    assert.equal(ObjectUtil.isEmpty(''), true);
+    assert.equal(ObjectUtil.isEmpty(null), true);
+    assert.equal(ObjectUtil.isEmpty([]), true);
+    assert.equal(ObjectUtil.isEmpty(new Uint8Array()), true);
+    assert.equal(ObjectUtil.isEmpty({ length: 0 }), true);
+    assert.equal(ObjectUtil.isEmpty({ size: 0 }), true);
+    assert.equal(ObjectUtil.isEmpty({ isEmpty: () => true }), true);
+    assert.equal(ObjectUtil.isEmpty({}), false);
+    assert.equal(
+      ObjectUtil.getFirstNonNull(null, () => null),
+      null,
+    );
+    assert.equal(ObjectUtil.getClass(null), null);
+    const callable = () => 1;
+    assert.equal(ObjectUtil.getClass(callable), callable);
+    assert.equal(ObjectUtil.getIfNull('value', 'fallback'), 'value');
+    assert.equal(ObjectUtil.isArray([]), true);
+    assert.equal(ObjectUtil.isNotEmpty([]), false);
+    assert.equal(ObjectUtil.mode(), null);
+    assert.equal(ObjectUtil.mode(1, 2), null);
+    assert.throws(() => ObjectUtil.median());
+    assert.throws(() => ObjectUtil.median(1, null as never));
+    assert.throws(() => ObjectUtil.medianBy(null as never, 1));
+    assert.throws(() => ObjectUtil.medianBy((left, right) => left - right, null as never));
+    assert.throws(() => ObjectUtil.requireNonEmpty(null));
+    assert.throws(() => ObjectUtil.requireNonEmpty(''));
+    assert.throws(() => ObjectUtil.appendIdentityToString(() => {}, null as never));
+    const builder = {
+      value: '',
+      append(value: string) {
+        this.value += value;
+      },
+    };
+    ObjectUtil.appendIdentityToString(builder, {});
+    assert.match(builder.value, /^Object@[0-9a-f]+$/u);
+  });
 });

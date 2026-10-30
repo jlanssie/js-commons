@@ -32,4 +32,29 @@ describe('EnumUtil', () => {
   it('processBitVector', () => assert.deepEqual(EnumUtil.processBitVector(Color, 3), ['Red', 'Blue']));
   it('processBitVectors', () => assert.deepEqual(EnumUtil.processBitVectors(Color, 3), ['Red', 'Blue']));
   it('stream', () => assert.deepEqual(EnumUtil.stream(Color), ['Red', 'Blue']));
+  it('handles arrays, value providers, defaults, and errors', () => {
+    const values = ['Red', 'Blue'] as const;
+    const provider = { values: () => values };
+    assert.deepEqual(EnumUtil.stream(values), ['Red', 'Blue']);
+    assert.deepEqual(EnumUtil.stream(provider), ['Red', 'Blue']);
+    assert.equal(EnumUtil.getEnum(values, 'Red'), 'Red');
+    assert.deepEqual(EnumUtil.getEnumList(values), ['Red', 'Blue']);
+    assert.equal(EnumUtil.getEnum(provider, 'Red'), 'Red');
+    assert.deepEqual(Array.from(EnumUtil.getEnumMap(null as never)), []);
+    assert.equal(EnumUtil.generateBitVector(Color, ['Red', 'Blue'] as never), 3);
+    assert.deepEqual(EnumUtil.getEnumList({ 0: 'Red', 1: 'Blue', Red: 0, Blue: 1 }), [0, 1]);
+    assert.equal(EnumUtil.getEnum(null, 'missing', 'fallback'), 'fallback');
+    assert.equal(EnumUtil.getEnumIgnoreCase(null, 'missing', 'fallback'), 'fallback');
+    assert.equal(EnumUtil.getEnum(Color, null, 'fallback'), 'fallback');
+    assert.equal(
+      EnumUtil.getFirstEnum(null, 1, () => 1, 'fallback'),
+      'fallback',
+    );
+    assert.equal(EnumUtil.getFirstEnumIgnoreCase(Color, null, String, 'fallback'), 'fallback');
+    assert.equal(EnumUtil.getEnumSystemProperty(Color, 'MISSING', 'fallback'), 'fallback');
+    assert.equal(EnumUtil.getEnumMap(Color, (value) => value.length).get(4), 'Blue');
+    assert.throws(() => EnumUtil.generateBitVector(Color, 'missing' as never));
+    assert.throws(() => EnumUtil.generateBitVectors(Color, 'missing' as never));
+    assert.throws(() => EnumUtil.generateBitVector(new Array(65).fill('x'), 'x'));
+  });
 });

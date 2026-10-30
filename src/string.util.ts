@@ -1,17 +1,38 @@
 type NullableString = string | null;
 
+/**
+ * Performs the string value operation.
+ * @param {unknown} value Value to process.
+ * @return {string | null} The resulting string.
+ */
 function stringValue(value: unknown): string | null {
   return value === null || value === undefined ? null : String(value);
 }
 
+/**
+ * Returns whether whitespace.
+ * @param {string} value Value to process.
+ * @return {boolean} Whether is whitespace.
+ */
 function isWhitespace(value: string): boolean {
   return /^\s$/u.test(value);
 }
 
+/**
+ * Returns whether blank value.
+ * @param {string | null | undefined} value Value to process.
+ * @return {boolean} Whether is blank value.
+ */
 function isBlankValue(value: string | null | undefined): boolean {
   return value === null || value === undefined || Array.from(value).every(isWhitespace);
 }
 
+/**
+ * Updates or transforms the value using strip start value.
+ * @param {string} value Value to process.
+ * @param {string | null | undefined} stripChars Characters to remove.
+ * @return {string} The resulting string.
+ */
 function stripStartValue(value: string, stripChars: string | null | undefined): string {
   let index = 0;
   while (
@@ -23,6 +44,12 @@ function stripStartValue(value: string, stripChars: string | null | undefined): 
   return value.slice(index);
 }
 
+/**
+ * Updates or transforms the value using strip end value.
+ * @param {string} value Value to process.
+ * @param {string | null | undefined} stripChars Characters to remove.
+ * @return {string} The resulting string.
+ */
 function stripEndValue(value: string, stripChars: string | null | undefined): string {
   let index = value.length;
   while (
@@ -36,6 +63,14 @@ function stripEndValue(value: string, stripChars: string | null | undefined): st
   return value.slice(0, index);
 }
 
+/**
+ * Performs the pad value operation.
+ * @param {string} value Value to process.
+ * @param {number} size Requested size.
+ * @param {string} pad Padding character or character code.
+ * @param {boolean} left Left value to compare.
+ * @return {string} The resulting string.
+ */
 function padValue(value: string, size: number, pad: string, left: boolean): string {
   const needed = size - value.length;
   if (needed <= 0 || pad.length === 0) {
@@ -45,6 +80,14 @@ function padValue(value: string, size: number, pad: string, left: boolean): stri
   return left ? repeated + value : value + repeated;
 }
 
+/**
+ * Performs the ordinal index operation.
+ * @param {string} value Value to process.
+ * @param {string} search Text or values to search for.
+ * @param {number} ordinal Occurrence number to find.
+ * @param {boolean} fromEnd Whether to search from the end.
+ * @return {number} The resulting number.
+ */
 function ordinalIndex(value: string, search: string, ordinal: number, fromEnd = false): number {
   if (ordinal <= 0 || search.length === 0) {
     return -1;
@@ -71,6 +114,15 @@ function ordinalIndex(value: string, search: string, ordinal: number, fromEnd = 
   return index;
 }
 
+/**
+ * Updates or transforms the value using replace literal.
+ * @param {string} text Text to process.
+ * @param {string} search Text or values to search for.
+ * @param {string} replacement Replacement text.
+ * @param {number} max Maximum number of items to process.
+ * @param {boolean} ignoreCase Whether the comparison ignores case.
+ * @return {string} The resulting string.
+ */
 function replaceLiteral(text: string, search: string, replacement: string, max = -1, ignoreCase = false): string {
   if (search.length === 0 || max === 0) {
     return text;
@@ -92,6 +144,14 @@ function replaceLiteral(text: string, search: string, replacement: string, max =
   return count === 0 ? text : result + text.slice(start);
 }
 
+/**
+ * Performs the split by characters operation.
+ * @param {string} value Value to process.
+ * @param {string | null} separatorChars Separator characters.
+ * @param {boolean} preserveAll Whether to preserve empty tokens.
+ * @param {number} max Maximum number of items to process.
+ * @return {string[]} The resulting collection.
+ */
 function splitByCharacters(value: string, separatorChars: string | null, preserveAll = false, max = 0): string[] {
   if (value.length === 0) {
     return [];
@@ -101,6 +161,9 @@ function splitByCharacters(value: string, separatorChars: string | null, preserv
   let index = 0;
   let matched = false;
   let lastMatch = false;
+  /**
+   * Returns whether separator.
+   */
   const isSeparator = (character: string): boolean =>
     separatorChars === null ? isWhitespace(character) : separatorChars.includes(character);
 
@@ -130,10 +193,25 @@ function splitByCharacters(value: string, separatorChars: string | null, preserv
   return result;
 }
 
+/**
+ * Performs the split by whitespace operation.
+ * @param {string} value Value to process.
+ * @param {boolean} preserveAll Whether to preserve empty tokens.
+ * @param {number} max Maximum number of items to process.
+ * @return {string[]} The resulting collection.
+ */
 function splitByWhitespace(value: string, preserveAll = false, max = 0): string[] {
   return splitByCharacters(value, null, preserveAll, max);
 }
 
+/**
+ * Performs the split by whole separator operation.
+ * @param {string} value Value to process.
+ * @param {string} separator Separator to use.
+ * @param {boolean} preserveAll Whether to preserve empty tokens.
+ * @param {number} max Maximum number of items to process.
+ * @return {string[]} The resulting collection.
+ */
 function splitByWholeSeparator(value: string, separator: string, preserveAll = false, max = 0): string[] {
   if (value.length === 0) {
     return [];
@@ -174,6 +252,14 @@ class StringUtil {
   static abbreviate(value: NullableString, offset: number, maxWidth: number): string | null;
   static abbreviate(value: NullableString, marker: string, maxWidth: number): string | null;
   static abbreviate(value: NullableString, marker: string, offset: number, maxWidth: number): string | null;
+  /**
+   * Performs the abbreviate operation.
+   * @param {NullableString} value Value to process.
+   * @param {number | string} offsetOrMarker Offset or marker.
+   * @param {number} maxWidthOrOffset Max width or offset.
+   * @param {number} maxWidth Maximum width.
+   * @return {string | null} The resulting string.
+   */
   static abbreviate(
     value: NullableString,
     offsetOrMarker: number | string,
@@ -222,6 +308,13 @@ class StringUtil {
     return marker + StringUtil.abbreviate(str.slice(Math.max(0, offset)), marker, width - marker.length);
   }
 
+  /**
+   * Performs the abbreviate with marker operation.
+   * @param {NullableString} value Value to process.
+   * @param {string} marker Marker to insert.
+   * @param {number} maxWidth Maximum width.
+   * @return {string | null} The resulting string.
+   */
   static abbreviateWithMarker(value: NullableString, marker: string, maxWidth: number): string | null {
     const str = stringValue(value);
     if (str === null || str.length <= maxWidth) {
@@ -233,6 +326,13 @@ class StringUtil {
     return str.slice(0, maxWidth - marker.length) + marker;
   }
 
+  /**
+   * Performs the abbreviate middle operation.
+   * @param {NullableString} value Value to process.
+   * @param {string} middle Text to insert in the middle.
+   * @param {number} length Number of characters or items.
+   * @return {string | null} The resulting string.
+   */
   static abbreviateMiddle(value: NullableString, middle: string, length: number): string | null {
     const str = stringValue(value);
     if (str === null || middle.length === 0 || str.length <= length || length < middle.length + 2) {
@@ -243,6 +343,13 @@ class StringUtil {
     return str.slice(0, front) + middle + str.slice(str.length - Math.floor(charsToPreserve / 2));
   }
 
+  /**
+   * Updates or transforms the value using append if missing.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} suffix Suffix to inspect or add.
+   * @param {...NullableString} suffixes Suffixes to inspect.
+   * @return {string | null} The resulting string.
+   */
   static appendIfMissing(value: NullableString, suffix: NullableString, ...suffixes: NullableString[]): string | null {
     const str = stringValue(value);
     const required = stringValue(suffix);
@@ -257,6 +364,13 @@ class StringUtil {
     return str + required;
   }
 
+  /**
+   * Updates or transforms the value using append if missing ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} suffix Suffix to inspect or add.
+   * @param {...NullableString} suffixes Suffixes to inspect.
+   * @return {string | null} The resulting string.
+   */
   static appendIfMissingIgnoreCase(
     value: NullableString,
     suffix: NullableString,
@@ -278,11 +392,23 @@ class StringUtil {
     return str + required;
   }
 
+  /**
+   * Performs the capitalize operation.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static capitalize(value: NullableString): string | null {
     const str = stringValue(value);
     return str === null || str.length === 0 ? str : str[0].toLocaleUpperCase() + str.slice(1);
   }
 
+  /**
+   * Performs the center operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} size Requested size.
+   * @param {string | number} pad Padding character or character code.
+   * @return {string | null} The resulting string.
+   */
   static center(value: NullableString, size: number, pad?: string | number): string | null {
     const str = stringValue(value);
     if (str === null || size <= str.length) {
@@ -295,6 +421,12 @@ class StringUtil {
     return padValue(padValue(str, str.length + right, padString, false), size, padString, true);
   }
 
+  /**
+   * Performs the chomp operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} separator Separator to use.
+   * @return {string | null} The resulting string.
+   */
   static chomp(value: NullableString, separator?: NullableString): string | null {
     const str = stringValue(value);
     if (str === null || str.length === 0) {
@@ -310,6 +442,11 @@ class StringUtil {
     return str.endsWith('\r') || str.endsWith('\n') ? str.slice(0, -1) : str;
   }
 
+  /**
+   * Performs the chop operation.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static chop(value: NullableString): string | null {
     const str = stringValue(value);
     if (str === null || str.length === 0) {
@@ -321,6 +458,13 @@ class StringUtil {
     return str.slice(0, -1);
   }
 
+  /**
+   * Performs the compare operation.
+   * @param {NullableString} left Left value to compare.
+   * @param {NullableString} right Right value to compare.
+   * @param {boolean} nullIsLess Whether null values sort before non-null values.
+   * @return {number} The resulting number.
+   */
   static compare(left: NullableString, right: NullableString, nullIsLess = true): number {
     if (left === right) {
       return 0;
@@ -334,6 +478,13 @@ class StringUtil {
     return left < right ? -1 : 1;
   }
 
+  /**
+   * Performs the compare ignore case operation.
+   * @param {NullableString} left Left value to compare.
+   * @param {NullableString} right Right value to compare.
+   * @param {boolean} nullIsLess Whether null values sort before non-null values.
+   * @return {number} The resulting number.
+   */
   static compareIgnoreCase(left: NullableString, right: NullableString, nullIsLess = true): number {
     return StringUtil.compare(
       left === null || left === undefined ? left : left.toLocaleLowerCase(),
@@ -342,6 +493,12 @@ class StringUtil {
     );
   }
 
+  /**
+   * Returns whether contains.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} search Text or values to search for.
+   * @return {boolean} Whether contains.
+   */
   static contains(value: NullableString, search: string | number | null | undefined): boolean {
     const str = stringValue(value);
     if (str === null || search === null || search === undefined) {
@@ -350,6 +507,13 @@ class StringUtil {
     return str.includes(typeof search === 'number' ? String.fromCharCode(search) : search);
   }
 
+  /**
+   * Returns whether any.
+   * @param {NullableString} value Value to process.
+   * @param {string | readonly string[] | null | undefined} search Text or values to search for.
+   * @param {...string} more More.
+   * @return {boolean} Whether contains any.
+   */
   static containsAny(
     value: NullableString,
     search: string | readonly string[] | null | undefined,
@@ -364,6 +528,12 @@ class StringUtil {
     return candidates.some((candidate) => str.includes(candidate));
   }
 
+  /**
+   * Returns whether any ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {...string | null | undefined} search Text or values to search for.
+   * @return {boolean} Whether contains any ignore case.
+   */
   static containsAnyIgnoreCase(value: NullableString, ...search: Array<string | null | undefined>): boolean {
     const str = stringValue(value);
     return (
@@ -375,6 +545,12 @@ class StringUtil {
     );
   }
 
+  /**
+   * Returns whether ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @return {boolean} Whether contains ignore case.
+   */
   static containsIgnoreCase(value: NullableString, search: NullableString): boolean {
     return (
       value !== null &&
@@ -385,6 +561,12 @@ class StringUtil {
     );
   }
 
+  /**
+   * Returns whether none.
+   * @param {NullableString} value Value to process.
+   * @param {string | readonly string[] | null | undefined} invalid Characters that are not allowed.
+   * @return {boolean} Whether contains none.
+   */
   static containsNone(value: NullableString, invalid: string | readonly string[] | null | undefined): boolean {
     const str = stringValue(value);
     if (str === null) {
@@ -397,6 +579,12 @@ class StringUtil {
     return !Array.from(str).some((character) => invalidChars.includes(character));
   }
 
+  /**
+   * Returns whether only.
+   * @param {NullableString} value Value to process.
+   * @param {string | readonly string[] | null | undefined} valid Valid.
+   * @return {boolean} Whether contains only.
+   */
   static containsOnly(value: NullableString, valid: string | readonly string[] | null | undefined): boolean {
     const str = stringValue(value);
     if (str === null || valid === null || valid === undefined) {
@@ -408,10 +596,21 @@ class StringUtil {
     return Array.from(str).every((character) => validChars.includes(character));
   }
 
+  /**
+   * Returns whether whitespace.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether contains whitespace.
+   */
   static containsWhitespace(value: NullableString): boolean {
     return value !== null && value !== undefined && Array.from(value).some(isWhitespace);
   }
 
+  /**
+   * Returns the count matches.
+   * @param {NullableString} value Value to process.
+   * @param {string | number} search Text or values to search for.
+   * @return {number} The resulting number.
+   */
   static countMatches(value: NullableString, search: string | number): number {
     const str = stringValue(value);
     if (str === null) {
@@ -433,18 +632,41 @@ class StringUtil {
     }
   }
 
+  /**
+   * Performs the default if blank operation.
+   * @param {T | null | undefined} value Value to process.
+   * @param {T} defaultValue Value to use when the input is nullish.
+   * @return {T} The resulting value.
+   */
   static defaultIfBlank<T extends string>(value: T | null | undefined, defaultValue: T): T {
     return isBlankValue(value) ? defaultValue : (value as T);
   }
 
+  /**
+   * Performs the default if empty operation.
+   * @param {T | null | undefined} value Value to process.
+   * @param {T} defaultValue Value to use when the input is nullish.
+   * @return {T} The resulting value.
+   */
   static defaultIfEmpty<T extends string>(value: T | null | undefined, defaultValue: T): T {
     return value === null || value === undefined || value.length === 0 ? defaultValue : value;
   }
 
+  /**
+   * Performs the default string operation.
+   * @param {NullableString} value Value to process.
+   * @param {string} nullDefault Value to use for nullish input.
+   * @return {string} The resulting string.
+   */
   static defaultString(value: NullableString, nullDefault = ''): string {
     return value === null || value === undefined ? nullDefault : value;
   }
 
+  /**
+   * Updates or transforms the value using delete whitespace.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static deleteWhitespace(value: NullableString): string | null {
     return value === null || value === undefined
       ? value
@@ -453,6 +675,12 @@ class StringUtil {
           .join('');
   }
 
+  /**
+   * Performs the difference operation.
+   * @param {NullableString} left Left value to compare.
+   * @param {NullableString} right Right value to compare.
+   * @return {string | null} The resulting string.
+   */
   static difference(left: NullableString, right: NullableString): string | null {
     if (left === null || left === undefined) {
       return right === null || right === undefined ? null : right;
@@ -464,16 +692,34 @@ class StringUtil {
     return index === -1 ? '' : right.slice(index);
   }
 
+  /**
+   * Returns whether ends with.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} suffix Suffix to inspect or add.
+   * @return {boolean} Whether ends with.
+   */
   static endsWith(value: NullableString, suffix: NullableString): boolean {
     return value === null || value === undefined
       ? suffix === null || suffix === undefined
       : suffix !== null && suffix !== undefined && value.endsWith(suffix);
   }
 
+  /**
+   * Returns whether ends with any.
+   * @param {NullableString} value Value to process.
+   * @param {...NullableString} suffixes Suffixes to inspect.
+   * @return {boolean} Whether ends with any.
+   */
   static endsWithAny(value: NullableString, ...suffixes: Array<NullableString>): boolean {
     return value !== null && value !== undefined && suffixes.some((suffix) => StringUtil.endsWith(value, suffix));
   }
 
+  /**
+   * Returns whether ends with ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} suffix Suffix to inspect or add.
+   * @return {boolean} Whether ends with ignore case.
+   */
   static endsWithIgnoreCase(value: NullableString, suffix: NullableString): boolean {
     return (
       value !== null &&
@@ -484,20 +730,44 @@ class StringUtil {
     );
   }
 
+  /**
+   * Returns whether equals.
+   * @param {NullableString} left Left value to compare.
+   * @param {NullableString} right Right value to compare.
+   * @return {boolean} Whether equals.
+   */
   static equals(left: NullableString, right: NullableString): boolean {
     return (
       left === right || (left !== null && left !== undefined && right !== null && right !== undefined && left === right)
     );
   }
 
+  /**
+   * Returns whether equals any.
+   * @param {NullableString} value Value to process.
+   * @param {...NullableString} search Text or values to search for.
+   * @return {boolean} Whether equals any.
+   */
   static equalsAny(value: NullableString, ...search: Array<NullableString>): boolean {
     return search.some((candidate) => StringUtil.equals(value, candidate));
   }
 
+  /**
+   * Returns whether equals any ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {...NullableString} search Text or values to search for.
+   * @return {boolean} Whether equals any ignore case.
+   */
   static equalsAnyIgnoreCase(value: NullableString, ...search: Array<NullableString>): boolean {
     return search.some((candidate) => StringUtil.equalsIgnoreCase(value, candidate));
   }
 
+  /**
+   * Returns whether equals ignore case.
+   * @param {NullableString} left Left value to compare.
+   * @param {NullableString} right Right value to compare.
+   * @return {boolean} Whether equals ignore case.
+   */
   static equalsIgnoreCase(left: NullableString, right: NullableString): boolean {
     return (
       left === right ||
@@ -509,14 +779,30 @@ class StringUtil {
     );
   }
 
+  /**
+   * Returns the first non blank.
+   * @param {...T | null | undefined} values Values to process.
+   * @return {T | null} The resulting value.
+   */
   static firstNonBlank<T extends string>(...values: Array<T | null | undefined>): T | null {
     return values.find((value) => !isBlankValue(value)) ?? null;
   }
 
+  /**
+   * Returns the first non empty.
+   * @param {...T | null | undefined} values Values to process.
+   * @return {T | null} The resulting value.
+   */
   static firstNonEmpty<T extends string>(...values: Array<T | null | undefined>): T | null {
     return values.find((value) => value !== null && value !== undefined && value.length > 0) ?? null;
   }
 
+  /**
+   * Returns the get bytes.
+   * @param {NullableString} value Value to process.
+   * @param {string} _charset Charset.
+   * @return {Uint8Array} The resulting value.
+   */
   static getBytes(value: NullableString, _charset = 'utf-8'): Uint8Array {
     if (value === null || value === undefined) {
       return new Uint8Array();
@@ -528,6 +814,11 @@ class StringUtil {
     }
   }
 
+  /**
+   * Returns the get common prefix.
+   * @param {...NullableString} values Values to process.
+   * @return {string} The resulting string.
+   */
   static getCommonPrefix(...values: Array<NullableString>): string {
     const strings = values.map((value) => value ?? '');
     if (strings.length === 0) {
@@ -543,6 +834,11 @@ class StringUtil {
     return strings[0].slice(0, end);
   }
 
+  /**
+   * Returns the get digits.
+   * @param {NullableString} value Value to process.
+   * @return {string} The resulting string.
+   */
   static getDigits(value: NullableString): string {
     return value === null || value === undefined
       ? ''
@@ -551,6 +847,13 @@ class StringUtil {
           .join('');
   }
 
+  /**
+   * Returns the get fuzzy distance.
+   * @param {string} term Term to compare.
+   * @param {string} query Query.
+   * @param {string} _locale Locale.
+   * @return {number} The resulting number.
+   */
   static getFuzzyDistance(term: string, query: string, _locale?: string): number {
     const lowerTerm = term.toLocaleLowerCase();
     const lowerQuery = query.toLocaleLowerCase();
@@ -567,14 +870,32 @@ class StringUtil {
     return score;
   }
 
+  /**
+   * Returns the get if blank.
+   * @param {T | null | undefined} value Value to process.
+   * @param {() => T} supplier Function that supplies a value.
+   * @return {T} The resulting value.
+   */
   static getIfBlank<T extends string>(value: T | null | undefined, supplier: () => T): T {
     return isBlankValue(value) ? supplier() : (value as T);
   }
 
+  /**
+   * Returns the get if empty.
+   * @param {T | null | undefined} value Value to process.
+   * @param {() => T} supplier Function that supplies a value.
+   * @return {T} The resulting value.
+   */
   static getIfEmpty<T extends string>(value: T | null | undefined, supplier: () => T): T {
     return value === null || value === undefined || value.length === 0 ? supplier() : value;
   }
 
+  /**
+   * Returns the get jaro winkler distance.
+   * @param {NullableString} first First value to process.
+   * @param {NullableString} second Second.
+   * @return {number} The resulting number.
+   */
   static getJaroWinklerDistance(first: NullableString, second: NullableString): number {
     if (
       first === null ||
@@ -627,6 +948,13 @@ class StringUtil {
     return Math.round(winkler * 100) / 100;
   }
 
+  /**
+   * Returns the get levenshtein distance.
+   * @param {NullableString} left Left value to compare.
+   * @param {NullableString} right Right value to compare.
+   * @param {number} threshold Maximum distance threshold.
+   * @return {number} The resulting number.
+   */
   static getLevenshteinDistance(left: NullableString, right: NullableString, threshold?: number): number {
     if (left === null || left === undefined || right === null || right === undefined) {
       if (left === right) return 0;
@@ -658,6 +986,13 @@ class StringUtil {
     return previous[right.length];
   }
 
+  /**
+   * Returns the index of.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} search Text or values to search for.
+   * @param {number} start Starting position.
+   * @return {number} The resulting number.
+   */
   static indexOf(value: NullableString, search: string | number | null | undefined, start = 0): number {
     const str = stringValue(value);
     if (str === null || search === null || search === undefined) {
@@ -666,6 +1001,13 @@ class StringUtil {
     return str.indexOf(typeof search === 'number' ? String.fromCharCode(search) : search, Math.max(0, start));
   }
 
+  /**
+   * Returns the index of any.
+   * @param {NullableString} value Value to process.
+   * @param {string | readonly string[] | null | undefined} search Text or values to search for.
+   * @param {...string} more More.
+   * @return {number} The resulting number.
+   */
   static indexOfAny(
     value: NullableString,
     search: string | readonly string[] | null | undefined,
@@ -685,6 +1027,12 @@ class StringUtil {
     return result;
   }
 
+  /**
+   * Returns the index of any but.
+   * @param {NullableString} value Value to process.
+   * @param {string | readonly string[] | null | undefined} search Text or values to search for.
+   * @return {number} The resulting number.
+   */
   static indexOfAnyBut(value: NullableString, search: string | readonly string[] | null | undefined): number {
     const str = stringValue(value);
     if (str === null || str.length === 0) return -1;
@@ -693,6 +1041,11 @@ class StringUtil {
     return -1;
   }
 
+  /**
+   * Returns the index of difference.
+   * @param {...NullableString} values Values to process.
+   * @return {number} The resulting number.
+   */
   static indexOfDifference(...values: Array<NullableString>): number {
     if (values.length < 2) return -1;
     const strings = values.map((value) => value ?? '');
@@ -703,17 +1056,39 @@ class StringUtil {
     return strings.some((value) => value.length !== shortest) ? shortest : -1;
   }
 
+  /**
+   * Returns the index of ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {number} start Starting position.
+   * @return {number} The resulting number.
+   */
   static indexOfIgnoreCase(value: NullableString, search: NullableString, start = 0): number {
     if (value === null || value === undefined || search === null || search === undefined) return -1;
     return value.toLocaleLowerCase().indexOf(search.toLocaleLowerCase(), Math.max(0, start));
   }
 
+  /**
+   * Returns whether all blank.
+   * @param {...NullableString} values Values to process.
+   * @return {boolean} Whether is all blank.
+   */
   static isAllBlank(...values: Array<NullableString>): boolean {
     return values.every(isBlankValue);
   }
+  /**
+   * Returns whether all empty.
+   * @param {...NullableString} values Values to process.
+   * @return {boolean} Whether is all empty.
+   */
   static isAllEmpty(...values: Array<NullableString>): boolean {
     return values.every((value) => value === null || value === undefined || value.length === 0);
   }
+  /**
+   * Returns whether all lower case.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is all lower case.
+   */
   static isAllLowerCase(value: NullableString): boolean {
     return (
       value !== null &&
@@ -724,6 +1099,11 @@ class StringUtil {
       )
     );
   }
+  /**
+   * Returns whether all upper case.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is all upper case.
+   */
   static isAllUpperCase(value: NullableString): boolean {
     return (
       value !== null &&
@@ -734,24 +1114,59 @@ class StringUtil {
       )
     );
   }
+  /**
+   * Returns whether alpha.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is alpha.
+   */
   static isAlpha(value: NullableString): boolean {
     return value !== null && value !== undefined && value.length > 0 && /^[A-Za-z]+$/u.test(value);
   }
+  /**
+   * Returns whether alphanumeric.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is alphanumeric.
+   */
   static isAlphanumeric(value: NullableString): boolean {
     return value !== null && value !== undefined && value.length > 0 && /^[A-Za-z0-9]+$/u.test(value);
   }
+  /**
+   * Returns whether alphanumeric space.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is alphanumeric space.
+   */
   static isAlphanumericSpace(value: NullableString): boolean {
     return value !== null && value !== undefined && value.length > 0 && /^[A-Za-z0-9\s]+$/u.test(value);
   }
+  /**
+   * Returns whether alpha space.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is alpha space.
+   */
   static isAlphaSpace(value: NullableString): boolean {
     return value !== null && value !== undefined && value.length > 0 && /^[A-Za-z\s]+$/u.test(value);
   }
+  /**
+   * Returns whether any blank.
+   * @param {...NullableString} values Values to process.
+   * @return {boolean} Whether is any blank.
+   */
   static isAnyBlank(...values: Array<NullableString>): boolean {
     return values.some(isBlankValue);
   }
+  /**
+   * Returns whether any empty.
+   * @param {...NullableString} values Values to process.
+   * @return {boolean} Whether is any empty.
+   */
   static isAnyEmpty(...values: Array<NullableString>): boolean {
     return values.some((value) => value === null || value === undefined || value.length === 0);
   }
+  /**
+   * Returns whether ascii printable.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is ascii printable.
+   */
   static isAsciiPrintable(value: NullableString): boolean {
     return (
       value !== null &&
@@ -759,37 +1174,95 @@ class StringUtil {
       Array.from(value).every((character) => character.codePointAt(0)! >= 32 && character.codePointAt(0)! <= 126)
     );
   }
+  /**
+   * Returns whether blank.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is blank.
+   */
   static isBlank(value: NullableString): boolean {
     return isBlankValue(value);
   }
+  /**
+   * Returns whether empty.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is empty.
+   */
   static isEmpty(value: NullableString): boolean {
     return value === null || value === undefined || value.length === 0;
   }
+  /**
+   * Returns whether mixed case.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is mixed case.
+   */
   static isMixedCase(value: NullableString): boolean {
     return value !== null && value !== undefined && /[a-z]/u.test(value) && /[A-Z]/u.test(value);
   }
+  /**
+   * Returns whether none blank.
+   * @param {...NullableString} values Values to process.
+   * @return {boolean} Whether is none blank.
+   */
   static isNoneBlank(...values: Array<NullableString>): boolean {
     return values.every((value) => !isBlankValue(value));
   }
+  /**
+   * Returns whether none empty.
+   * @param {...NullableString} values Values to process.
+   * @return {boolean} Whether is none empty.
+   */
   static isNoneEmpty(...values: Array<NullableString>): boolean {
     return values.every((value) => !StringUtil.isEmpty(value));
   }
+  /**
+   * Returns whether not blank.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is not blank.
+   */
   static isNotBlank(value: NullableString): boolean {
     return !isBlankValue(value);
   }
+  /**
+   * Returns whether not empty.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is not empty.
+   */
   static isNotEmpty(value: NullableString): boolean {
     return !StringUtil.isEmpty(value);
   }
+  /**
+   * Returns whether numeric.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is numeric.
+   */
   static isNumeric(value: NullableString): boolean {
     return value !== null && value !== undefined && value.length > 0 && /^\p{Nd}+$/u.test(value);
   }
+  /**
+   * Returns whether numeric space.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is numeric space.
+   */
   static isNumericSpace(value: NullableString): boolean {
     return value !== null && value !== undefined && value.length > 0 && /^[\p{Nd}\s]+$/u.test(value);
   }
+  /**
+   * Returns whether whitespace.
+   * @param {NullableString} value Value to process.
+   * @return {boolean} Whether is whitespace.
+   */
   static isWhitespace(value: NullableString): boolean {
     return value !== null && value !== undefined && Array.from(value).every(isWhitespace);
   }
 
+  /**
+   * Performs the join operation.
+   * @param {unknown} value Value to process.
+   * @param {string | number} separator Separator to use.
+   * @param {number} startIndex Starting index.
+   * @param {number} endIndex Exclusive ending index.
+   * @return {string | null} The resulting string.
+   */
   static join(value: unknown, separator: string | number = ',', startIndex?: number, endIndex?: number): string | null {
     if (value === null || value === undefined) return null;
     let values: unknown[];
@@ -811,11 +1284,24 @@ class StringUtil {
       .join(delimiter);
   }
 
+  /**
+   * Performs the join with operation.
+   * @param {NullableString} separator Separator to use.
+   * @param {...unknown} values Values to process.
+   * @return {string} The resulting string.
+   */
   static joinWith(separator: NullableString, ...values: unknown[]): string {
     if (separator === null || separator === undefined) throw new TypeError('delimiter must not be null');
     return values.map((value) => (value === null || value === undefined ? '' : String(value))).join(separator);
   }
 
+  /**
+   * Returns the last index of.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} search Text or values to search for.
+   * @param {number} start Starting position.
+   * @return {number} The resulting number.
+   */
   static lastIndexOf(value: NullableString, search: string | number | null | undefined, start?: number): number {
     const str = stringValue(value);
     if (str === null || search === null || search === undefined) return -1;
@@ -823,6 +1309,12 @@ class StringUtil {
     return str.lastIndexOf(needle, start === undefined ? str.length : start);
   }
 
+  /**
+   * Returns the last index of any.
+   * @param {NullableString} value Value to process.
+   * @param {...NullableString} search Text or values to search for.
+   * @return {number} The resulting number.
+   */
   static lastIndexOfAny(value: NullableString, ...search: Array<NullableString>): number {
     const str = stringValue(value);
     if (str === null) return -1;
@@ -832,27 +1324,65 @@ class StringUtil {
     }, -1);
   }
 
+  /**
+   * Returns the last index of ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {number} start Starting position.
+   * @return {number} The resulting number.
+   */
   static lastIndexOfIgnoreCase(value: NullableString, search: NullableString, start?: number): number {
     if (value === null || value === undefined || search === null || search === undefined) return -1;
     return value.toLocaleLowerCase().lastIndexOf(search.toLocaleLowerCase(), start === undefined ? value.length : start);
   }
 
+  /**
+   * Returns the last ordinal index of.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {number} ordinal Occurrence number to find.
+   * @return {number} The resulting number.
+   */
   static lastOrdinalIndexOf(value: NullableString, search: NullableString, ordinal: number): number {
     return value === null || value === undefined || search === null || search === undefined
       ? -1
       : ordinalIndex(value, search, ordinal, true);
   }
 
+  /**
+   * Performs the left operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} length Number of characters or items.
+   * @return {string | null} The resulting string.
+   */
   static left(value: NullableString, length: number): string | null {
     return value === null || value === undefined ? value : length <= 0 ? '' : value.slice(0, length);
   }
+  /**
+   * Performs the left pad operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} size Requested size.
+   * @param {string | number} pad Padding character or character code.
+   * @return {string | null} The resulting string.
+   */
   static leftPad(value: NullableString, size: number, pad: string | number = ' '): string | null {
     const str = stringValue(value);
     return str === null ? null : padValue(str, size, typeof pad === 'number' ? String.fromCharCode(pad) : pad, true);
   }
+  /**
+   * Returns the length.
+   * @param {NullableString} value Value to process.
+   * @return {number} The resulting number.
+   */
   static length(value: NullableString): number {
     return value === null || value === undefined ? 0 : value.length;
   }
+  /**
+   * Performs the lower case operation.
+   * @param {NullableString} value Value to process.
+   * @param {string} locale Locale to use.
+   * @return {string | null} The resulting string.
+   */
   static lowerCase(value: NullableString, locale?: string): string | null {
     return value === null || value === undefined
       ? value
@@ -860,19 +1390,46 @@ class StringUtil {
         ? value.toLocaleLowerCase(locale)
         : value.toLocaleLowerCase();
   }
+  /**
+   * Performs the mid operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} position Starting position.
+   * @param {number} length Number of characters or items.
+   * @return {string | null} The resulting string.
+   */
   static mid(value: NullableString, position: number, length: number): string | null {
     if (value === null || value === undefined || length <= 0) return value === null || value === undefined ? value : '';
     return value.slice(Math.max(0, position), Math.max(0, position) + length);
   }
+  /**
+   * Converts the supplied value using normalize space.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static normalizeSpace(value: NullableString): string | null {
     return value === null || value === undefined ? value : value.replace(/\s+/gu, ' ').trim();
   }
+  /**
+   * Performs the ordinal index of operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {number} ordinal Occurrence number to find.
+   * @return {number} The resulting number.
+   */
   static ordinalIndexOf(value: NullableString, search: NullableString, ordinal: number): number {
     return value === null || value === undefined || search === null || search === undefined
       ? -1
       : ordinalIndex(value, search, ordinal);
   }
 
+  /**
+   * Performs the overlay operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} overlayValue Overlay value.
+   * @param {number} start Starting position.
+   * @param {number} end Exclusive ending position.
+   * @return {string | null} The resulting string.
+   */
   static overlay(value: NullableString, overlayValue: NullableString, start: number, end: number): string | null {
     if (value === null || value === undefined) return null;
     const overlay = overlayValue ?? '';
@@ -882,6 +1439,13 @@ class StringUtil {
     return value.slice(0, from) + overlay + value.slice(to);
   }
 
+  /**
+   * Updates or transforms the value using prepend if missing.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} prefix Prefix to inspect or add.
+   * @param {...NullableString} prefixes Prefixes to inspect.
+   * @return {string | null} The resulting string.
+   */
   static prependIfMissing(value: NullableString, prefix: NullableString, ...prefixes: NullableString[]): string | null {
     const str = stringValue(value);
     const required = stringValue(prefix);
@@ -894,6 +1458,13 @@ class StringUtil {
       return str;
     return required + str;
   }
+  /**
+   * Updates or transforms the value using prepend if missing ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} prefix Prefix to inspect or add.
+   * @param {...NullableString} prefixes Prefixes to inspect.
+   * @return {string | null} The resulting string.
+   */
   static prependIfMissingIgnoreCase(
     value: NullableString,
     prefix: NullableString,
@@ -913,21 +1484,45 @@ class StringUtil {
       return str;
     return required + str;
   }
+  /**
+   * Updates or transforms the value using remove.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} remove Text or element to remove.
+   * @return {string | null} The resulting string.
+   */
   static remove(value: NullableString, remove: string | number | null | undefined): string | null {
     const str = stringValue(value);
     if (str === null || remove === null || remove === undefined) return str;
     const needle = typeof remove === 'number' ? String.fromCharCode(remove) : remove;
     return replaceLiteral(str, needle, '');
   }
+  /**
+   * Updates or transforms the value using remove all.
+   * @param {NullableString} value Value to process.
+   * @param {string} regex Regular expression pattern.
+   * @return {string | null} The resulting string.
+   */
   static removeAll(value: NullableString, regex: string): string | null {
     return value === null || value === undefined ? value : value.replace(new RegExp(regex, 'gu'), '');
   }
+  /**
+   * Updates or transforms the value using remove end.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} remove Text or element to remove.
+   * @return {string | null} The resulting string.
+   */
   static removeEnd(value: NullableString, remove: NullableString): string | null {
     const str = stringValue(value);
     return str === null || remove === null || remove === undefined || !str.endsWith(remove)
       ? str
       : str.slice(0, -remove.length);
   }
+  /**
+   * Updates or transforms the value using remove end ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} remove Text or element to remove.
+   * @return {string | null} The resulting string.
+   */
   static removeEndIgnoreCase(value: NullableString, remove: NullableString): string | null {
     const str = stringValue(value);
     return str === null ||
@@ -937,22 +1532,52 @@ class StringUtil {
       ? str
       : str.slice(0, -remove.length);
   }
+  /**
+   * Updates or transforms the value using remove first.
+   * @param {NullableString} value Value to process.
+   * @param {string} regex Regular expression pattern.
+   * @return {string | null} The resulting string.
+   */
   static removeFirst(value: NullableString, regex: string): string | null {
     return value === null || value === undefined ? value : value.replace(new RegExp(regex, 'u'), '');
   }
+  /**
+   * Updates or transforms the value using remove ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} remove Text or element to remove.
+   * @return {string | null} The resulting string.
+   */
   static removeIgnoreCase(value: NullableString, remove: NullableString): string | null {
     const str = stringValue(value);
     return str === null || remove === null || remove === undefined ? str : replaceLiteral(str, remove, '', -1, true);
   }
+  /**
+   * Updates or transforms the value using remove pattern.
+   * @param {NullableString} value Value to process.
+   * @param {string} regex Regular expression pattern.
+   * @return {string | null} The resulting string.
+   */
   static removePattern(value: NullableString, regex: string): string | null {
     return StringUtil.removeAll(value, regex);
   }
+  /**
+   * Updates or transforms the value using remove start.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} remove Text or element to remove.
+   * @return {string | null} The resulting string.
+   */
   static removeStart(value: NullableString, remove: string | number | null | undefined): string | null {
     const str = stringValue(value);
     if (str === null || remove === null || remove === undefined) return str;
     const prefix = typeof remove === 'number' ? String.fromCharCode(remove) : remove;
     return !str.startsWith(prefix) ? str : str.slice(prefix.length);
   }
+  /**
+   * Updates or transforms the value using remove start ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} remove Text or element to remove.
+   * @return {string | null} The resulting string.
+   */
   static removeStartIgnoreCase(value: NullableString, remove: NullableString): string | null {
     const str = stringValue(value);
     return str === null ||
@@ -962,20 +1587,49 @@ class StringUtil {
       ? str
       : str.slice(remove.length);
   }
+  /**
+   * Performs the repeat operation.
+   * @param {string} value Value to process.
+   * @param {number} count Number of items to process.
+   * @param {string} separator Separator to use.
+   * @return {string} The resulting string.
+   */
   static repeat(value: string, count: number, separator?: string): string {
     if (count <= 0) return '';
     return Array(count)
       .fill(value)
       .join(separator ?? '');
   }
+  /**
+   * Updates or transforms the value using replace.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {NullableString} replacement Replacement text.
+   * @param {number} max Maximum number of items to process.
+   * @return {string | null} The resulting string.
+   */
   static replace(value: NullableString, search: NullableString, replacement: NullableString, max = -1): string | null {
     return value === null || value === undefined || search === null || search === undefined || search.length === 0
       ? value
       : replaceLiteral(value, search, replacement ?? '', max);
   }
+  /**
+   * Updates or transforms the value using replace all.
+   * @param {NullableString} value Value to process.
+   * @param {string} regex Regular expression pattern.
+   * @param {NullableString} replacement Replacement text.
+   * @return {string | null} The resulting string.
+   */
   static replaceAll(value: NullableString, regex: string, replacement: NullableString): string | null {
     return value === null || value === undefined ? value : value.replace(new RegExp(regex, 'gu'), replacement ?? '');
   }
+  /**
+   * Updates or transforms the value using replace chars.
+   * @param {NullableString} value Value to process.
+   * @param {string} search Text or values to search for.
+   * @param {string} replacement Replacement text.
+   * @return {string | null} The resulting string.
+   */
   static replaceChars(value: NullableString, search: string, replacement: string): string | null {
     if (value === null || value === undefined) return value;
     return Array.from(value)
@@ -985,6 +1639,13 @@ class StringUtil {
       })
       .join('');
   }
+  /**
+   * Updates or transforms the value using replace each.
+   * @param {NullableString} value Value to process.
+   * @param {readonly string[]} searchList Search strings.
+   * @param {readonly NullableString[]} replacementList Replacement strings.
+   * @return {string | null} The resulting string.
+   */
   static replaceEach(
     value: NullableString,
     searchList: readonly string[],
@@ -993,6 +1654,13 @@ class StringUtil {
     if (value === null || value === undefined) return value;
     return searchList.reduce((result, search, index) => replaceLiteral(result, search, replacementList[index] ?? ''), value);
   }
+  /**
+   * Updates or transforms the value using replace each repeatedly.
+   * @param {NullableString} value Value to process.
+   * @param {readonly string[]} searchList Search strings.
+   * @param {readonly NullableString[]} replacementList Replacement strings.
+   * @return {string | null} The resulting string.
+   */
   static replaceEachRepeatedly(
     value: NullableString,
     searchList: readonly string[],
@@ -1006,9 +1674,24 @@ class StringUtil {
     }
     return result;
   }
+  /**
+   * Updates or transforms the value using replace first.
+   * @param {NullableString} value Value to process.
+   * @param {string} regex Regular expression pattern.
+   * @param {NullableString} replacement Replacement text.
+   * @return {string | null} The resulting string.
+   */
   static replaceFirst(value: NullableString, regex: string, replacement: NullableString): string | null {
     return value === null || value === undefined ? value : value.replace(new RegExp(regex, 'u'), replacement ?? '');
   }
+  /**
+   * Updates or transforms the value using replace ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {NullableString} replacement Replacement text.
+   * @param {number} max Maximum number of items to process.
+   * @return {string | null} The resulting string.
+   */
   static replaceIgnoreCase(
     value: NullableString,
     search: NullableString,
@@ -1019,34 +1702,92 @@ class StringUtil {
       ? value
       : replaceLiteral(value, search, replacement ?? '', max, true);
   }
+  /**
+   * Updates or transforms the value using replace once.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {NullableString} replacement Replacement text.
+   * @return {string | null} The resulting string.
+   */
   static replaceOnce(value: NullableString, search: NullableString, replacement: NullableString): string | null {
     return StringUtil.replace(value, search, replacement, 1);
   }
+  /**
+   * Updates or transforms the value using replace once ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} search Text or values to search for.
+   * @param {NullableString} replacement Replacement text.
+   * @return {string | null} The resulting string.
+   */
   static replaceOnceIgnoreCase(value: NullableString, search: NullableString, replacement: NullableString): string | null {
     return StringUtil.replaceIgnoreCase(value, search, replacement, 1);
   }
+  /**
+   * Updates or transforms the value using replace pattern.
+   * @param {NullableString} value Value to process.
+   * @param {string} regex Regular expression pattern.
+   * @param {NullableString} replacement Replacement text.
+   * @return {string | null} The resulting string.
+   */
   static replacePattern(value: NullableString, regex: string, replacement: NullableString): string | null {
     return StringUtil.replaceAll(value, regex, replacement);
   }
+  /**
+   * Updates or transforms the value using reverse.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static reverse(value: NullableString): string | null {
     return value === null || value === undefined ? value : Array.from(value).reverse().join('');
   }
+  /**
+   * Updates or transforms the value using reverse delimited.
+   * @param {NullableString} value Value to process.
+   * @param {string} separator Separator to use.
+   * @return {string | null} The resulting string.
+   */
   static reverseDelimited(value: NullableString, separator: string): string | null {
     return value === null || value === undefined ? value : value.split(separator).reverse().join(separator);
   }
+  /**
+   * Performs the right operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} length Number of characters or items.
+   * @return {string | null} The resulting string.
+   */
   static right(value: NullableString, length: number): string | null {
     return value === null || value === undefined ? value : length <= 0 ? '' : value.slice(-length);
   }
+  /**
+   * Performs the right pad operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} size Requested size.
+   * @param {string | number} pad Padding character or character code.
+   * @return {string | null} The resulting string.
+   */
   static rightPad(value: NullableString, size: number, pad: string | number = ' '): string | null {
     const str = stringValue(value);
     return str === null ? null : padValue(str, size, typeof pad === 'number' ? String.fromCharCode(pad) : pad, false);
   }
+  /**
+   * Updates or transforms the value using rotate.
+   * @param {NullableString} value Value to process.
+   * @param {number} shift Number of positions to rotate.
+   * @return {string | null} The resulting string.
+   */
   static rotate(value: NullableString, shift: number): string | null {
     if (value === null || value === undefined || value.length === 0) return value;
     const distance = ((shift % value.length) + value.length) % value.length;
     return value.slice(value.length - distance) + value.slice(0, value.length - distance);
   }
 
+  /**
+   * Performs the split operation.
+   * @param {NullableString} value Value to process.
+   * @param {string | number} separator Separator to use.
+   * @param {number} max Maximum number of items to process.
+   * @return {string[] | null} The resulting collection.
+   */
   static split(value: NullableString, separator?: string | number, max = 0): string[] | null {
     if (value === null || value === undefined) return null;
     if (separator === undefined || separator === null) return splitByWhitespace(value, false, max);
@@ -1054,6 +1795,13 @@ class StringUtil {
     if (separator.length === 0) return splitByWhitespace(value, false, max);
     return splitByCharacters(value, separator, false, max);
   }
+  /**
+   * Performs the split preserve all tokens operation.
+   * @param {NullableString} value Value to process.
+   * @param {string | number} separator Separator to use.
+   * @param {number} max Maximum number of items to process.
+   * @return {string[] | null} The resulting collection.
+   */
   static splitPreserveAllTokens(value: NullableString, separator?: string | number, max = 0): string[] | null {
     if (value === null || value === undefined) return null;
     if (separator === undefined || separator === null) return splitByWhitespace(value, true, max);
@@ -1061,21 +1809,44 @@ class StringUtil {
     if (separatorString.length === 0) return splitByWhitespace(value, true, max);
     return splitByCharacters(value, separatorString, true, max);
   }
+  /**
+   * Performs the split by whole separator operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} separator Separator to use.
+   * @param {number} max Maximum number of items to process.
+   * @return {string[] | null} The resulting collection.
+   */
   static splitByWholeSeparator(value: NullableString, separator: NullableString, max = 0): string[] | null {
     if (value === null || value === undefined) return null;
     if (separator === null || separator === undefined || separator.length === 0) return splitByWhitespace(value, false, max);
     return splitByWholeSeparator(value, separator, false, max);
   }
+  /**
+   * Performs the split by whole separator preserve all tokens operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} separator Separator to use.
+   * @param {number} max Maximum number of items to process.
+   * @return {string[] | null} The resulting collection.
+   */
   static splitByWholeSeparatorPreserveAllTokens(value: NullableString, separator: NullableString, max = 0): string[] | null {
     if (value === null || value === undefined) return null;
     if (separator === null || separator === undefined || separator.length === 0) return splitByWhitespace(value, true, max);
     return splitByWholeSeparator(value, separator, true, max);
   }
+  /**
+   * Performs the split by character type operation.
+   * @param {NullableString} value Value to process.
+   * @param {boolean} camelCase Whether camel-case boundaries are recognized.
+   * @return {string[] | null} The resulting collection.
+   */
   static splitByCharacterType(value: NullableString, camelCase = false): string[] | null {
     if (value === null || value === undefined || value.length === 0)
       return value === null || value === undefined ? value : [];
     const result: string[] = [];
     let current = value[0];
+    /**
+     * Performs the type operation.
+     */
     const type = (character: string): string =>
       /[A-Z]/u.test(character) ? 'upper' : /[a-z]/u.test(character) ? 'lower' : /\d/u.test(character) ? 'digit' : 'other';
     for (let index = 1; index < value.length; index += 1) {
@@ -1096,18 +1867,41 @@ class StringUtil {
     result.push(current);
     return result;
   }
+  /**
+   * Performs the split by character type camel case operation.
+   * @param {NullableString} value Value to process.
+   * @return {string[] | null} The resulting collection.
+   */
   static splitByCharacterTypeCamelCase(value: NullableString): string[] | null {
     return StringUtil.splitByCharacterType(value, true);
   }
 
+  /**
+   * Returns whether starts with.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} prefix Prefix to inspect or add.
+   * @return {boolean} Whether starts with.
+   */
   static startsWith(value: NullableString, prefix: NullableString): boolean {
     return value === null || value === undefined
       ? prefix === null || prefix === undefined
       : prefix !== null && prefix !== undefined && value.startsWith(prefix);
   }
+  /**
+   * Returns whether starts with any.
+   * @param {NullableString} value Value to process.
+   * @param {...NullableString} prefixes Prefixes to inspect.
+   * @return {boolean} Whether starts with any.
+   */
   static startsWithAny(value: NullableString, ...prefixes: Array<NullableString>): boolean {
     return value !== null && value !== undefined && prefixes.some((prefix) => StringUtil.startsWith(value, prefix));
   }
+  /**
+   * Returns whether starts with ignore case.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} prefix Prefix to inspect or add.
+   * @return {boolean} Whether starts with ignore case.
+   */
   static startsWithIgnoreCase(value: NullableString, prefix: NullableString): boolean {
     return (
       value !== null &&
@@ -1117,9 +1911,20 @@ class StringUtil {
       value.toLocaleLowerCase().startsWith(prefix.toLocaleLowerCase())
     );
   }
+  /**
+   * Updates or transforms the value using strip.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} stripChars Characters to remove.
+   * @return {string | null} The resulting string.
+   */
   static strip(value: NullableString, stripChars?: NullableString): string | null {
     return value === null || value === undefined ? value : stripEndValue(stripStartValue(value, stripChars), stripChars);
   }
+  /**
+   * Updates or transforms the value using strip accents.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static stripAccents(value: NullableString): string | null {
     return value === null || value === undefined ? value : value.normalize('NFD').replace(/\p{M}/gu, '');
   }
@@ -1128,6 +1933,13 @@ class StringUtil {
     values: readonly NullableString[] | null | undefined,
     stripChars?: NullableString,
   ): Array<string | null> | null;
+  /**
+   * Updates or transforms the value using strip all.
+   * @param {NullableString | readonly NullableString[] | null | undefined} valuesOrFirst Collection or first value to process.
+   * @param {NullableString} stripChars Characters to remove.
+   * @param {...NullableString} remaining Remaining.
+   * @return {Array<string | null> | null} The resulting collection.
+   */
   static stripAll(
     valuesOrFirst: NullableString | readonly NullableString[] | null | undefined,
     stripChars?: NullableString,
@@ -1146,19 +1958,48 @@ class StringUtil {
       StringUtil.strip(value),
     );
   }
+  /**
+   * Updates or transforms the value using strip end.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} stripChars Characters to remove.
+   * @return {string | null} The resulting string.
+   */
   static stripEnd(value: NullableString, stripChars?: NullableString): string | null {
     return value === null || value === undefined ? value : stripEndValue(value, stripChars);
   }
+  /**
+   * Updates or transforms the value using strip start.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} stripChars Characters to remove.
+   * @return {string | null} The resulting string.
+   */
   static stripStart(value: NullableString, stripChars?: NullableString): string | null {
     return value === null || value === undefined ? value : stripStartValue(value, stripChars);
   }
+  /**
+   * Updates or transforms the value using strip to empty.
+   * @param {NullableString} value Value to process.
+   * @return {string} The resulting string.
+   */
   static stripToEmpty(value: NullableString): string {
     return StringUtil.strip(value) ?? '';
   }
+  /**
+   * Updates or transforms the value using strip to null.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static stripToNull(value: NullableString): string | null {
     const result = StringUtil.strip(value);
     return result === null || result.length === 0 ? null : result;
   }
+  /**
+   * Performs the substring operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} start Starting position.
+   * @param {number} end Exclusive ending position.
+   * @return {string | null} The resulting string.
+   */
   static substring(value: NullableString, start: number, end?: number): string | null {
     if (value === null || value === undefined) return value;
     const length = value.length;
@@ -1166,6 +2007,12 @@ class StringUtil {
     const to = end === undefined ? length : end < 0 ? Math.max(0, length + end) : Math.min(end, length);
     return from > to ? '' : value.slice(from, to);
   }
+  /**
+   * Performs the substring after operation.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} find Text to find.
+   * @return {string | null} The resulting string.
+   */
   static substringAfter(value: NullableString, find: string | number | null | undefined): string | null {
     if (value === null || value === undefined) return value;
     if (find === null || find === undefined) return '';
@@ -1174,6 +2021,12 @@ class StringUtil {
     const index = value.indexOf(needle);
     return index < 0 ? '' : value.slice(index + needle.length);
   }
+  /**
+   * Performs the substring after last operation.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} find Text to find.
+   * @return {string | null} The resulting string.
+   */
   static substringAfterLast(value: NullableString, find: string | number | null | undefined): string | null {
     if (value === null || value === undefined) return value;
     if (find === null || find === undefined) return '';
@@ -1182,6 +2035,12 @@ class StringUtil {
     const index = value.lastIndexOf(needle);
     return index < 0 ? '' : value.slice(index + needle.length);
   }
+  /**
+   * Performs the substring before operation.
+   * @param {NullableString} value Value to process.
+   * @param {string | number | null | undefined} find Text to find.
+   * @return {string | null} The resulting string.
+   */
   static substringBefore(value: NullableString, find: string | number | null | undefined): string | null {
     if (value === null || value === undefined) return value;
     if (find === null || find === undefined) return value;
@@ -1190,12 +2049,25 @@ class StringUtil {
     const index = value.indexOf(needle);
     return index < 0 ? value : value.slice(0, index);
   }
+  /**
+   * Performs the substring before last operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} find Text to find.
+   * @return {string | null} The resulting string.
+   */
   static substringBeforeLast(value: NullableString, find: NullableString): string | null {
     if (value === null || value === undefined) return value;
     if (find === null || find === undefined || find.length === 0) return '';
     const index = value.lastIndexOf(find);
     return index < 0 ? value : value.slice(0, index);
   }
+  /**
+   * Performs the substring between operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} open Opening delimiter.
+   * @param {NullableString} close Close.
+   * @return {string | null} The resulting string.
+   */
   static substringBetween(value: NullableString, open: NullableString, close?: NullableString): string | null {
     if (value === null || value === undefined || open === null || open === undefined) return null;
     const ending = close === undefined ? open : close;
@@ -1205,6 +2077,13 @@ class StringUtil {
     const end = value.indexOf(ending, start + open.length);
     return end < 0 ? null : value.slice(start + open.length, end);
   }
+  /**
+   * Performs the substrings between operation.
+   * @param {NullableString} value Value to process.
+   * @param {NullableString} open Opening delimiter.
+   * @param {NullableString} close Close.
+   * @return {string[] | null} The resulting collection.
+   */
   static substringsBetween(value: NullableString, open: NullableString, close: NullableString): string[] | null {
     if (
       value === null ||
@@ -1230,6 +2109,11 @@ class StringUtil {
     }
     return result.length === 0 ? null : result;
   }
+  /**
+   * Updates or transforms the value using swap case.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static swapCase(value: NullableString): string | null {
     if (value === null || value === undefined) return value;
     return Array.from(value)
@@ -1238,9 +2122,20 @@ class StringUtil {
       )
       .join('');
   }
+  /**
+   * Converts the supplied value using to code points.
+   * @param {NullableString} value Value to process.
+   * @return {number[]} The resulting collection.
+   */
   static toCodePoints(value: NullableString): number[] {
     return value === null || value === undefined ? [] : Array.from(value, (character) => character.codePointAt(0)!);
   }
+  /**
+   * Converts the supplied value using to encoded string.
+   * @param {Uint8Array | number[]} bytes Bytes to decode.
+   * @param {string} charset Character encoding to use.
+   * @return {string} The resulting string.
+   */
   static toEncodedString(bytes: Uint8Array | number[], charset = 'utf-8'): string {
     try {
       return new TextDecoder(charset).decode(Uint8Array.from(bytes));
@@ -1248,38 +2143,92 @@ class StringUtil {
       return String.fromCharCode(...bytes);
     }
   }
+  /**
+   * Returns the string representation.
+   * @param {Uint8Array | number[] | null | undefined} bytes Bytes to decode.
+   * @param {string} charset Character encoding to use.
+   * @return {string | null} The resulting string.
+   */
   static toString(bytes: Uint8Array | number[] | null | undefined, charset = 'utf-8'): string | null {
     return bytes === null || bytes === undefined ? null : StringUtil.toEncodedString(bytes, charset);
   }
+  /**
+   * Converts the supplied value using to root lower case.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static toRootLowerCase(value: NullableString): string | null {
     return value === null || value === undefined ? value : value.toLocaleLowerCase('en-US');
   }
+  /**
+   * Converts the supplied value using to root upper case.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static toRootUpperCase(value: NullableString): string | null {
     return value === null || value === undefined ? value : value.toLocaleUpperCase('en-US');
   }
+  /**
+   * Updates or transforms the value using trim.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static trim(value: NullableString): string | null {
     return value === null || value === undefined ? value : value.trim();
   }
+  /**
+   * Updates or transforms the value using trim ascii control.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static trimAsciiControl(value: NullableString): string | null {
     return value === null || value === undefined ? value : value.replace(/^[\x00-\x20]+|[\x00-\x20]+$/gu, '');
   }
+  /**
+   * Updates or transforms the value using trim to empty.
+   * @param {NullableString} value Value to process.
+   * @return {string} The resulting string.
+   */
   static trimToEmpty(value: NullableString): string {
     return value === null || value === undefined ? '' : value.trim();
   }
+  /**
+   * Updates or transforms the value using trim to null.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static trimToNull(value: NullableString): string | null {
     const result = StringUtil.trimToEmpty(value);
     return result.length === 0 ? null : result;
   }
+  /**
+   * Performs the truncate operation.
+   * @param {NullableString} value Value to process.
+   * @param {number} offsetOrMaxWidth Offset or maximum width.
+   * @param {number} maxWidth Maximum width.
+   * @return {string | null} The resulting string.
+   */
   static truncate(value: NullableString, offsetOrMaxWidth: number, maxWidth?: number): string | null {
     if (value === null || value === undefined) return value;
     const offset = maxWidth === undefined ? 0 : offsetOrMaxWidth;
     const width = maxWidth === undefined ? offsetOrMaxWidth : maxWidth;
     return value.slice(offset, offset + width);
   }
+  /**
+   * Performs the uncapitalize operation.
+   * @param {NullableString} value Value to process.
+   * @return {string | null} The resulting string.
+   */
   static uncapitalize(value: NullableString): string | null {
     const str = stringValue(value);
     return str === null || str.length === 0 ? str : str[0].toLocaleLowerCase() + str.slice(1);
   }
+  /**
+   * Updates or transforms the value using unwrap.
+   * @param {NullableString} value Value to process.
+   * @param {string | number} wrap Wrapping text or character code.
+   * @return {string | null} The resulting string.
+   */
   static unwrap(value: NullableString, wrap: string | number): string | null {
     if (value === null || value === undefined) return value;
     const token = typeof wrap === 'number' ? String.fromCharCode(wrap) : wrap;
@@ -1287,6 +2236,12 @@ class StringUtil {
       ? value.slice(token.length, -token.length)
       : value;
   }
+  /**
+   * Performs the upper case operation.
+   * @param {NullableString} value Value to process.
+   * @param {string} locale Locale to use.
+   * @return {string | null} The resulting string.
+   */
   static upperCase(value: NullableString, locale?: string): string | null {
     return value === null || value === undefined
       ? value
@@ -1294,14 +2249,31 @@ class StringUtil {
         ? value.toLocaleUpperCase(locale)
         : value.toLocaleUpperCase();
   }
+  /**
+   * Performs the value of operation.
+   * @param {readonly unknown[] | null | undefined} value Value to process.
+   * @return {string} The resulting string.
+   */
   static valueOf(value: readonly unknown[] | null | undefined): string {
     return value === null || value === undefined ? '' : String.fromCharCode(...value.map((entry) => Number(entry)));
   }
+  /**
+   * Updates or transforms the value using wrap.
+   * @param {NullableString} value Value to process.
+   * @param {string | number} wrapWith Wrapping text or character code.
+   * @return {string | null} The resulting string.
+   */
   static wrap(value: NullableString, wrapWith: string | number): string | null {
     if (value === null || value === undefined) return value;
     const token = typeof wrapWith === 'number' ? String.fromCharCode(wrapWith) : wrapWith;
     return token + value + token;
   }
+  /**
+   * Updates or transforms the value using wrap if missing.
+   * @param {NullableString} value Value to process.
+   * @param {string | number} wrapWith Wrapping text or character code.
+   * @return {string | null} The resulting string.
+   */
   static wrapIfMissing(value: NullableString, wrapWith: string | number): string | null {
     if (value === null || value === undefined) return value;
     const token = typeof wrapWith === 'number' ? String.fromCharCode(wrapWith) : wrapWith;

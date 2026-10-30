@@ -3,16 +3,30 @@ class LocaleValue {
   readonly country: string;
   readonly variant: string;
 
+  /**
+   * Creates an instance.
+   * @param {string} language Language code.
+   * @param {string} country Country.
+   * @param {string} variant Variant.
+   */
   constructor(language = '', country = '', variant = '') {
     this.language = language;
     this.country = country;
     this.variant = variant;
   }
 
+  /**
+   * Gets the region.
+   * @return {string} The resulting string.
+   */
   get region(): string {
     return this.country;
   }
 
+  /**
+   * Returns the string representation.
+   * @return {string} The resulting string.
+   */
   toString(): string {
     if (this.language.length === 0 && this.country.length > 0) {
       return `_${this.country}${this.variant.length > 0 ? `_${this.variant}` : ''}`;
@@ -20,6 +34,10 @@ class LocaleValue {
     return [this.language, this.country, this.variant].filter((part) => part.length > 0).join('_');
   }
 
+  /**
+   * Converts this value to an internationalized locale.
+   * @return {Intl.Locale | null} The resulting value.
+   */
   toIntlLocale(): Intl.Locale | null {
     if (this.language.length === 0) {
       return null;
@@ -36,6 +54,11 @@ class LocaleValue {
 export type LocaleLike =
   LocaleValue | Intl.Locale | string | { language?: string; country?: string; region?: string; variant?: string };
 
+/**
+ * Converts the supplied value using from locale.
+ * @param {LocaleLike | null | undefined} value Value to process.
+ * @return {LocaleValue | null} The resulting value.
+ */
 function fromLocale(value: LocaleLike | null | undefined): LocaleValue | null {
   if (value === null || value === undefined) {
     return null;
@@ -53,10 +76,20 @@ function fromLocale(value: LocaleLike | null | undefined): LocaleValue | null {
   return new LocaleValue(value.language ?? '', value.country ?? value.region ?? '', value.variant ?? '');
 }
 
+/**
+ * Performs the locale key operation.
+ * @param {LocaleValue} locale Locale to use.
+ * @return {string} The resulting string.
+ */
 function localeKey(locale: LocaleValue): string {
   return locale.toString();
 }
 
+/**
+ * Converts the supplied value using parse locale string.
+ * @param {string} locale Locale to use.
+ * @return {LocaleValue} The resulting value.
+ */
 function parseLocaleString(locale: string): LocaleValue {
   if (locale.length === 0) {
     return new LocaleValue();
@@ -81,8 +114,15 @@ function parseLocaleString(locale: string): LocaleValue {
   return new LocaleValue(language, country, variant);
 }
 
+/**
+ * Creates a value using build available locales.
+ * @return {LocaleValue[]} The resulting collection.
+ */
 function buildAvailableLocales(): LocaleValue[] {
   const values = new Map<string, LocaleValue>();
+  /**
+   * Updates or transforms the value using add.
+   */
   const add = (locale: LocaleValue): void => {
     values.set(localeKey(locale), locale);
   };
@@ -236,14 +276,27 @@ const availableLocales = buildAvailableLocales();
 
 /** Apache Commons Lang inspired locale utilities. */
 class LocaleUtil {
+  /**
+   * Performs the available locale list operation.
+   * @return {LocaleValue[]} The resulting collection.
+   */
   static availableLocaleList(): LocaleValue[] {
     return availableLocales.slice();
   }
 
+  /**
+   * Performs the available locale set operation.
+   * @return {Set<LocaleValue>} The resulting collection.
+   */
   static availableLocaleSet(): Set<LocaleValue> {
     return new Set(availableLocales);
   }
 
+  /**
+   * Returns the countries by language.
+   * @param {string | null | undefined} languageCode Language code to match.
+   * @return {LocaleValue[]} The resulting collection.
+   */
   static countriesByLanguage(languageCode: string | null | undefined): LocaleValue[] {
     if (!languageCode) {
       return [];
@@ -251,16 +304,31 @@ class LocaleUtil {
     return availableLocales.filter((locale) => locale.language === languageCode && locale.country.length > 0);
   }
 
+  /**
+   * Returns whether available locale.
+   * @param {LocaleLike | null | undefined} locale Locale to use.
+   * @return {boolean} Whether is available locale.
+   */
   static isAvailableLocale(locale: LocaleLike | null | undefined): boolean {
     const value = fromLocale(locale);
     return value !== null && availableLocales.some((candidate) => candidate.toString() === value.toString());
   }
 
+  /**
+   * Returns whether language undetermined.
+   * @param {LocaleLike | null | undefined} locale Locale to use.
+   * @return {boolean} Whether is language undetermined.
+   */
   static isLanguageUndetermined(locale: LocaleLike | null | undefined): boolean {
     const value = fromLocale(locale);
     return value === null || value.language.length === 0;
   }
 
+  /**
+   * Performs the languages by country operation.
+   * @param {string | null | undefined} countryCode Country code to match.
+   * @return {LocaleValue[]} The resulting collection.
+   */
   static languagesByCountry(countryCode: string | null | undefined): LocaleValue[] {
     if (!countryCode) {
       return [];
@@ -268,12 +336,21 @@ class LocaleUtil {
     return availableLocales.filter((locale) => locale.country === countryCode && locale.language.length > 0);
   }
 
+  /**
+   * Performs the locale lookup list operation.
+   * @param {LocaleLike | null | undefined} locale Locale to use.
+   * @param {LocaleLike | null} defaultLocale Locale to use when no more specific locale matches.
+   * @return {LocaleValue[]} The resulting collection.
+   */
   static localeLookupList(locale: LocaleLike | null | undefined, defaultLocale?: LocaleLike | null): LocaleValue[] {
     const value = fromLocale(locale);
     if (value === null) {
       return defaultLocale === undefined || defaultLocale === null ? [] : [fromLocale(defaultLocale)!];
     }
     const result: LocaleValue[] = [];
+    /**
+     * Updates or transforms the value using add.
+     */
     const add = (candidate: LocaleValue): void => {
       if (!result.some((existing) => existing.toString() === candidate.toString())) {
         result.push(candidate);
@@ -299,6 +376,11 @@ class LocaleUtil {
     return result;
   }
 
+  /**
+   * Converts the supplied value using to locale.
+   * @param {LocaleLike | null | undefined} locale Locale to use.
+   * @return {LocaleValue | null} The resulting value.
+   */
   static toLocale(locale: LocaleLike | null | undefined): LocaleValue | null {
     if (locale === null || locale === undefined) {
       return null;

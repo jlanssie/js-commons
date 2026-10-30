@@ -4,6 +4,11 @@ export type Closure<T> = (value: T) => void;
 export type Equator<T> = (left: T, right: T) => boolean;
 export type CollectionLike<T> = Iterable<T> | ArrayLike<T> | null | undefined;
 
+/**
+ * Performs the values of operation.
+ * @param {CollectionLike<T>} collection Collection to process.
+ * @return {T[]} The resulting collection.
+ */
 function valuesOf<T>(collection: CollectionLike<T>): T[] {
   if (collection === null || collection === undefined) {
     return [];
@@ -20,6 +25,12 @@ function valuesOf<T>(collection: CollectionLike<T>): T[] {
   return Array.from(collection as ArrayLike<T>);
 }
 
+/**
+ * Updates or transforms the value using add value.
+ * @param {CollectionLike<T>} collection Collection to process.
+ * @param {T} value Value to process.
+ * @return {boolean} Whether add value.
+ */
 function addValue<T>(collection: CollectionLike<T>, value: T): boolean {
   if (collection === null || collection === undefined) {
     throw new TypeError('collection must not be null');
@@ -45,6 +56,12 @@ function addValue<T>(collection: CollectionLike<T>, value: T): boolean {
   throw new TypeError('collection is not mutable');
 }
 
+/**
+ * Performs the cardinality map operation.
+ * @param {CollectionLike<T>} collection Collection to process.
+ * @param {Equator<T>} equator Equality function to use.
+ * @return {Array<{ value: T; count: number }>} The resulting collection.
+ */
 function cardinalityMap<T>(
   collection: CollectionLike<T>,
   equator: Equator<T> = Object.is,
@@ -58,6 +75,11 @@ function cardinalityMap<T>(
   return result;
 }
 
+/**
+ * Performs the collection size operation.
+ * @param {unknown} collection Collection to process.
+ * @return {number} The resulting number.
+ */
 function collectionSize(collection: unknown): number {
   if (collection === null || collection === undefined) return 0;
   if (typeof collection === 'string' || Array.isArray(collection) || ArrayBuffer.isView(collection))
@@ -82,6 +104,13 @@ class CollectionUtil {
 
   static addAll<T>(collection: CollectionLike<T>, values: Iterable<T> | ArrayLike<T>): boolean;
   static addAll<T>(collection: CollectionLike<T>, ...values: T[]): boolean;
+  /**
+   * Updates or transforms the value using add all.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {Iterable<T> | ArrayLike<T> | T} values Values to process.
+   * @param {...T} additional Additional.
+   * @return {boolean} Whether add all.
+   */
   static addAll<T>(collection: CollectionLike<T>, values: Iterable<T> | ArrayLike<T> | T, ...additional: T[]): boolean {
     if (additional.length > 0) {
       let changed = false;
@@ -100,14 +129,34 @@ class CollectionUtil {
     return addValue(collection, values as T);
   }
 
+  /**
+   * Updates or transforms the value using add ignore null.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {T | null | undefined} value Value to process.
+   * @return {boolean} Whether add ignore null.
+   */
   static addIgnoreNull<T>(collection: CollectionLike<T>, value: T | null | undefined): boolean {
     return value === null || value === undefined ? false : addValue(collection, value);
   }
 
+  /**
+   * Performs the cardinality operation.
+   * @param {T} value Value to process.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @return {number} The resulting number.
+   */
   static cardinality<T>(value: T, collection: CollectionLike<T>): number {
     return valuesOf(collection).filter((entry) => Object.is(entry, value)).length;
   }
 
+  /**
+   * Performs the collate operation.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @param {((a: T, b: T) => number) | boolean} comparator Comparator to use.
+   * @param {boolean} includeDuplicates Include duplicates.
+   * @return {T[]} The resulting collection.
+   */
   static collate<T>(
     left: CollectionLike<T>,
     right: CollectionLike<T>,
@@ -120,10 +169,22 @@ class CollectionUtil {
     return include ? result : result.filter((value, index) => index === 0 || compare(result[index - 1], value) !== 0);
   }
 
+  /**
+   * Performs the collect operation.
+   * @param {CollectionLike<I>} input Input.
+   * @param {Transformer<I, O>} transformer Transformer.
+   * @return {O[]} The resulting collection.
+   */
   static collect<I, O>(input: CollectionLike<I>, transformer: Transformer<I, O>): O[] {
     return valuesOf(input).map(transformer);
   }
 
+  /**
+   * Returns whether all.
+   * @param {CollectionLike<unknown>} left Left value to compare.
+   * @param {CollectionLike<unknown>} right Right value to compare.
+   * @return {boolean} Whether contains all.
+   */
   static containsAll(left: CollectionLike<unknown>, right: CollectionLike<unknown>): boolean {
     const source = valuesOf(left);
     return valuesOf(right).every((value) => source.some((entry) => Object.is(entry, value)));
@@ -131,6 +192,13 @@ class CollectionUtil {
 
   static containsAny(left: CollectionLike<unknown>, right: CollectionLike<unknown>): boolean;
   static containsAny<T>(left: CollectionLike<unknown>, ...right: T[]): boolean;
+  /**
+   * Returns whether any.
+   * @param {CollectionLike<unknown>} left Left value to compare.
+   * @param {CollectionLike<T> | T} rightOrFirst Right or first.
+   * @param {...T} rest Rest.
+   * @return {boolean} Whether contains any.
+   */
   static containsAny<T>(left: CollectionLike<unknown>, rightOrFirst: CollectionLike<T> | T, ...rest: T[]): boolean {
     const right =
       rightOrFirst !== null &&
@@ -143,10 +211,22 @@ class CollectionUtil {
     return right.some((value) => source.some((entry) => Object.is(entry, value)));
   }
 
+  /**
+   * Returns the count matches.
+   * @param {CollectionLike<T>} input Input.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {number} The resulting number.
+   */
   static countMatches<T>(input: CollectionLike<T>, predicate: Predicate<T>): number {
     return predicate === null || predicate === undefined ? 0 : valuesOf(input).filter(predicate).length;
   }
 
+  /**
+   * Performs the disjunction operation.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @return {T[]} The resulting collection.
+   */
   static disjunction<T>(left: CollectionLike<T>, right: CollectionLike<T>): T[] {
     const leftCounts = cardinalityMap(left);
     const rightCounts = cardinalityMap(right);
@@ -160,9 +240,18 @@ class CollectionUtil {
     );
   }
 
+  /**
+   * Performs the empty collection operation.
+   * @return {T[]} The resulting collection.
+   */
   static emptyCollection<T>(): T[] {
     return CollectionUtil.EMPTY_COLLECTION as unknown as T[];
   }
+  /**
+   * Performs the empty if null operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @return {T[]} The resulting collection.
+   */
   static emptyIfNull<T>(collection: CollectionLike<T>): T[] {
     return collection === null || collection === undefined
       ? CollectionUtil.emptyCollection<T>()
@@ -170,10 +259,21 @@ class CollectionUtil {
         ? collection
         : valuesOf(collection);
   }
+  /**
+   * Returns whether exists.
+   * @param {CollectionLike<T>} input Input.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {boolean} Whether exists.
+   */
   static exists<T>(input: CollectionLike<T>, predicate: Predicate<T>): boolean {
     return predicate === null || predicate === undefined ? false : valuesOf(input).some(predicate);
   }
 
+  /**
+   * Performs the extract singleton operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @return {T | null} The resulting value.
+   */
   static extractSingleton<T>(collection: CollectionLike<T>): T | null {
     const values = valuesOf(collection);
     if (values.length !== 1) {
@@ -182,6 +282,12 @@ class CollectionUtil {
     return values[0];
   }
 
+  /**
+   * Performs the filter operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {boolean} Whether filter.
+   */
   static filter<T>(collection: CollectionLike<T>, predicate: Predicate<T>): boolean {
     if (predicate === null || predicate === undefined) return false;
     if (Array.isArray(collection)) {
@@ -202,15 +308,33 @@ class CollectionUtil {
     return false;
   }
 
+  /**
+   * Performs the filter inverse operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {boolean} Whether filter inverse.
+   */
   static filterInverse<T>(collection: CollectionLike<T>, predicate: Predicate<T>): boolean {
     return predicate === null || predicate === undefined
       ? false
       : CollectionUtil.filter(collection, (value) => !predicate(value));
   }
+  /**
+   * Returns the find.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {T | null} The resulting value.
+   */
   static find<T>(collection: CollectionLike<T>, predicate: Predicate<T>): T | null {
     return predicate === null || predicate === undefined ? null : (valuesOf(collection).find(predicate) ?? null);
   }
 
+  /**
+   * Performs the for all but last do operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {Closure<T>} closure Closure.
+   * @return {T | null} The resulting value.
+   */
   static forAllButLastDo<T>(collection: CollectionLike<T>, closure: Closure<T>): T | null {
     const values = valuesOf(collection);
     if (closure === null || closure === undefined) return null;
@@ -218,11 +342,23 @@ class CollectionUtil {
     return values.at(-1) ?? null;
   }
 
+  /**
+   * Performs the for all do operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {Closure<T>} closure Closure.
+   * @return {Closure<T>} The resulting value.
+   */
   static forAllDo<T>(collection: CollectionLike<T>, closure: Closure<T>): Closure<T> {
     if (closure !== null && closure !== undefined) valuesOf(collection).forEach(closure);
     return closure;
   }
 
+  /**
+   * Returns the get.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {number} index Index to process.
+   * @return {T | null} The resulting value.
+   */
   static get<T>(collection: CollectionLike<T>, index: number): T | null {
     if (index < 0) return null;
     if (collection instanceof Map) return [...collection.entries()][index] as T;
@@ -230,18 +366,35 @@ class CollectionUtil {
     return valuesOf(collection)[index] ?? null;
   }
 
+  /**
+   * Returns the get cardinality map.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @return {Map<T, number>} The resulting collection.
+   */
   static getCardinalityMap<T>(collection: CollectionLike<T>): Map<T, number> {
     const result = new Map<T, number>();
     for (const value of valuesOf(collection)) result.set(value, (result.get(value) ?? 0) + 1);
     return result;
   }
 
+  /**
+   * Returns the hash code for the collection.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {Equator<T>} equator Equality function to use.
+   * @return {number} The resulting number.
+   */
   static hashCode<T>(collection: CollectionLike<T>, equator: Equator<T> = Object.is): number {
     void equator;
     if (collection === null || collection === undefined) return 0;
     return valuesOf(collection).reduce((hash, value) => (Math.imul(31, hash) + collectionHash(value)) | 0, 1);
   }
 
+  /**
+   * Performs the intersection operation.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @return {T[]} The resulting collection.
+   */
   static intersection<T>(left: CollectionLike<T>, right: CollectionLike<T>): T[] {
     const remaining = cardinalityMap(right);
     const result: T[] = [];
@@ -255,12 +408,29 @@ class CollectionUtil {
     return result;
   }
 
+  /**
+   * Returns whether empty.
+   * @param {CollectionLike<unknown>} collection Collection to process.
+   * @return {boolean} Whether is empty.
+   */
   static isEmpty(collection: CollectionLike<unknown>): boolean {
     return collectionSize(collection) === 0;
   }
+  /**
+   * Returns whether not empty.
+   * @param {CollectionLike<unknown>} collection Collection to process.
+   * @return {boolean} Whether is not empty.
+   */
   static isNotEmpty(collection: CollectionLike<unknown>): boolean {
     return !CollectionUtil.isEmpty(collection);
   }
+  /**
+   * Returns whether equal collection.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @param {Equator<T>} equator Equality function to use.
+   * @return {boolean} Whether is equal collection.
+   */
   static isEqualCollection<T>(left: CollectionLike<T>, right: CollectionLike<T>, equator: Equator<T> = Object.is): boolean {
     const a = cardinalityMap(left, equator);
     const b = cardinalityMap(right, equator);
@@ -269,21 +439,49 @@ class CollectionUtil {
       a.every((entry) => b.some((candidate) => equator(entry.value, candidate.value) && entry.count === candidate.count))
     );
   }
+  /**
+   * Returns whether full.
+   * @param {CollectionLike<unknown>} collection Collection to process.
+   * @return {boolean} Whether is full.
+   */
   static isFull(collection: CollectionLike<unknown>): boolean {
     const candidate = collection as unknown as { isFull?: () => boolean };
     return typeof candidate?.isFull === 'function' ? candidate.isFull() : false;
   }
+  /**
+   * Returns whether proper sub collection.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @return {boolean} Whether is proper sub collection.
+   */
   static isProperSubCollection<T>(left: CollectionLike<T>, right: CollectionLike<T>): boolean {
     return CollectionUtil.isSubCollection(left, right) && collectionSize(left) < collectionSize(right);
   }
+  /**
+   * Returns whether sub collection.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @return {boolean} Whether is sub collection.
+   */
   static isSubCollection<T>(left: CollectionLike<T>, right: CollectionLike<T>): boolean {
     const a = cardinalityMap(left);
     const b = cardinalityMap(right);
     return a.every((entry) => (b.find((candidate) => Object.is(candidate.value, entry.value))?.count ?? 0) >= entry.count);
   }
+  /**
+   * Returns whether matches all.
+   * @param {CollectionLike<T>} input Input.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {boolean} Whether matches all.
+   */
   static matchesAll<T>(input: CollectionLike<T>, predicate: Predicate<T>): boolean {
     return predicate === null || predicate === undefined ? false : valuesOf(input).every(predicate);
   }
+  /**
+   * Returns the max size.
+   * @param {CollectionLike<unknown>} collection Collection to process.
+   * @return {number} The resulting number.
+   */
   static maxSize(collection: CollectionLike<unknown>): number {
     const candidate = collection as unknown as { maxSize?: number | (() => number) };
     return typeof candidate?.maxSize === 'function'
@@ -293,9 +491,17 @@ class CollectionUtil {
         : -1;
   }
 
+  /**
+   * Performs the permutations operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @return {T[][]} The resulting collection.
+   */
   static permutations<T>(collection: CollectionLike<T>): T[][] {
     const values = valuesOf(collection);
     const result: T[][] = [];
+    /**
+     * Performs the visit operation.
+     */
     const visit = (remaining: T[], path: T[]): void => {
       if (remaining.length === 0) {
         result.push(path);
@@ -309,9 +515,21 @@ class CollectionUtil {
     return result;
   }
 
+  /**
+   * Performs the predicated collection operation.
+   * @param {T[]} collection Collection to process.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {T[]} The resulting collection.
+   */
   static predicatedCollection<T>(collection: T[], predicate: Predicate<T>): T[] {
     const target = collection;
     return new Proxy(target, {
+      /**
+       * Returns the get.
+       * @param {unknown} object Object to inspect.
+       * @param {unknown} property Property.
+       * @param {unknown} receiver Receiver.
+       */
       get(object, property, receiver) {
         if (property === 'push')
           return (...items: T[]) => {
@@ -325,11 +543,25 @@ class CollectionUtil {
     });
   }
 
+  /**
+   * Updates or transforms the value using remove all.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {CollectionLike<T>} remove Text or element to remove.
+   * @param {Equator<T>} equator Equality function to use.
+   * @return {T[]} The resulting collection.
+   */
   static removeAll<T>(collection: CollectionLike<T>, remove: CollectionLike<T>, equator?: Equator<T>): T[] {
     const isEqual = equator ?? Object.is;
     const removed = valuesOf(remove);
     return valuesOf(collection).filter((value) => !removed.some((candidate) => isEqual(value, candidate)));
   }
+  /**
+   * Updates or transforms the value using remove count.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {number} startIndex Starting index.
+   * @param {number} count Number of items to process.
+   * @return {T[]} The resulting collection.
+   */
   static removeCount<T>(collection: CollectionLike<T>, startIndex: number, count: number): T[] {
     if (!Number.isInteger(startIndex) || startIndex < 0) {
       throw new RangeError('startIndex must be a non-negative integer');
@@ -346,34 +578,81 @@ class CollectionUtil {
     }
     return values.slice(startIndex, startIndex + count);
   }
+  /**
+   * Updates or transforms the value using remove range.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {number} startIndex Starting index.
+   * @param {number} endIndex Exclusive ending index.
+   * @return {T[]} The resulting collection.
+   */
   static removeRange<T>(collection: CollectionLike<T>, startIndex: number, endIndex: number): T[] {
     if (endIndex < startIndex) {
       throw new RangeError('endIndex must not be less than startIndex');
     }
     return CollectionUtil.removeCount(collection, startIndex, endIndex - startIndex);
   }
+  /**
+   * Performs the retain all operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @param {CollectionLike<T>} retain Values to retain.
+   * @param {Equator<T>} equator Equality function to use.
+   * @return {T[]} The resulting collection.
+   */
   static retainAll<T>(collection: CollectionLike<T>, retain: CollectionLike<T>, equator?: Equator<T>): T[] {
     const isEqual = equator ?? Object.is;
     const values = valuesOf(retain);
     return valuesOf(collection).filter((value) => values.some((candidate) => isEqual(value, candidate)));
   }
+  /**
+   * Updates or transforms the value using reverse array.
+   * @param {T[]} array Array to process.
+   */
   static reverseArray<T>(array: T[]): void {
     array.reverse();
   }
+  /**
+   * Performs the select operation.
+   * @param {CollectionLike<T>} input Input.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {T[]} The resulting collection.
+   */
   static select<T>(input: CollectionLike<T>, predicate: Predicate<T>): T[] {
     return predicate === null || predicate === undefined ? [] : valuesOf(input).filter(predicate);
   }
+  /**
+   * Performs the select rejected operation.
+   * @param {CollectionLike<T>} input Input.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {T[]} The resulting collection.
+   */
   static selectRejected<T>(input: CollectionLike<T>, predicate: Predicate<T>): T[] {
     return predicate === null || predicate === undefined ? [] : valuesOf(input).filter((value) => !predicate(value));
   }
+  /**
+   * Returns the size.
+   * @param {unknown} object Object to inspect.
+   * @return {number} The resulting number.
+   */
   static size(object: unknown): number {
     return collectionSize(object);
   }
+  /**
+   * Returns the size is empty.
+   * @param {unknown} object Object to inspect.
+   * @return {boolean} Whether size is empty.
+   */
   static sizeIsEmpty(object: unknown): boolean {
     return collectionSize(object) === 0;
   }
   static subtract<T>(left: CollectionLike<T>, right: CollectionLike<T>): T[];
   static subtract<T>(left: CollectionLike<T>, right: CollectionLike<T>, predicate: Predicate<T>): T[];
+  /**
+   * Performs the subtract operation.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {T[]} The resulting collection.
+   */
   static subtract<T>(left: CollectionLike<T>, right: CollectionLike<T>, predicate: Predicate<T> = () => true): T[] {
     const remaining = cardinalityMap(valuesOf(right).filter(predicate));
     return valuesOf(left).filter((value) => {
@@ -385,19 +664,48 @@ class CollectionUtil {
       return true;
     });
   }
+  /**
+   * Performs the subtract by operation.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @param {Predicate<T>} predicate Predicate to apply.
+   * @return {T[]} The resulting collection.
+   */
   static subtractBy<T>(left: CollectionLike<T>, right: CollectionLike<T>, predicate: Predicate<T>): T[] {
     return CollectionUtil.subtract(left, right, predicate);
   }
+  /**
+   * Performs the synchronized collection operation.
+   * @param {T[]} collection Collection to process.
+   * @return {T[]} The resulting collection.
+   */
   static synchronizedCollection<T>(collection: T[]): T[] {
     return collection;
   }
+  /**
+   * Performs the transform operation.
+   * @param {T[]} collection Collection to process.
+   * @param {Transformer<T, T>} transformer Transformer.
+   */
   static transform<T>(collection: T[], transformer: Transformer<T, T>): void {
     for (let index = 0; index < collection.length; index += 1) collection[index] = transformer(collection[index]);
   }
+  /**
+   * Performs the transforming collection operation.
+   * @param {T[]} collection Collection to process.
+   * @param {Transformer<T, T>} transformer Transformer.
+   * @return {T[]} The resulting collection.
+   */
   static transformingCollection<T>(collection: T[], transformer: Transformer<T, T>): T[] {
     CollectionUtil.transform(collection, transformer);
     return collection;
   }
+  /**
+   * Performs the union operation.
+   * @param {CollectionLike<T>} left Left value to compare.
+   * @param {CollectionLike<T>} right Right value to compare.
+   * @return {T[]} The resulting collection.
+   */
   static union<T>(left: CollectionLike<T>, right: CollectionLike<T>): T[] {
     const result = valuesOf(left);
     const leftCounts = CollectionUtil.getCardinalityMap(left);
@@ -406,16 +714,32 @@ class CollectionUtil {
       for (let index = count - (leftCounts.get(value) ?? 0); index > 0; index -= 1) result.push(value);
     return result;
   }
+  /**
+   * Performs the unmodifiable collection operation.
+   * @param {CollectionLike<T>} collection Collection to process.
+   * @return {readonly T[]} The resulting collection.
+   */
   static unmodifiableCollection<T>(collection: CollectionLike<T>): readonly T[] {
     return Object.freeze(valuesOf(collection));
   }
 }
 
+/**
+ * Performs the numeric compare operation.
+ * @param {unknown} left Left value to compare.
+ * @param {unknown} right Right value to compare.
+ * @return {number} The resulting number.
+ */
 function numericCompare(left: unknown, right: unknown): number {
   if (left === right) return 0;
   return (left as string | number) < (right as string | number) ? -1 : 1;
 }
 
+/**
+ * Performs the collection hash operation.
+ * @param {unknown} value Value to process.
+ * @return {number} The resulting number.
+ */
 function collectionHash(value: unknown): number {
   if (value === null || value === undefined) return 0;
   if (typeof value === 'number') return value | 0;

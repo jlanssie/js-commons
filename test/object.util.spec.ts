@@ -68,6 +68,17 @@ describe('ObjectUtil', () => {
       ),
       'supplied',
     );
+    assert.equal(
+      ObjectUtil.toString(
+        () => 'value',
+        () => 'fallback',
+      ),
+      'value',
+    );
+    assert.equal(
+      ObjectUtil.toString(null, () => 'supplied'),
+      'supplied',
+    );
   });
   it('toStringWithSupplier', () =>
     assert.equal(
@@ -76,6 +87,7 @@ describe('ObjectUtil', () => {
     ));
   it('wait', async () => {
     await ObjectUtil.wait({}, 0);
+    await ObjectUtil.wait({}, { milliseconds: 0 });
   });
   it('handles value types, nulls, and validation paths', () => {
     assert.equal(ObjectUtil.NULL.toString(), 'null');
@@ -86,26 +98,35 @@ describe('ObjectUtil', () => {
     assert.equal(ObjectUtil.identityHashCodeHex(sameObject), ObjectUtil.identityHashCodeHex(sameObject));
     assert.equal(ObjectUtil.clone(null), null);
     assert.equal(ObjectUtil.clone(new Uint8Array([1]))?.[0], 1);
+    assert.equal(ObjectUtil.cloneIfPossible(1), 1);
+    assert.deepEqual(ObjectUtil.cloneIfPossible([1]), [1]);
     assert.deepEqual(ObjectUtil.clone([1, 2]), [1, 2]);
     assert.deepEqual(ObjectUtil.clone({ clone: () => ({ value: 1 }) }), { value: 1 });
     assert.equal(ObjectUtil.clone({ callback: () => 1 }), null);
     assert.equal(ObjectUtil.clone(1), null);
     assert.equal(ObjectUtil.hashCode(true), 1231);
+    assert.equal(ObjectUtil.hashCode(false), 1237);
     assert.equal(ObjectUtil.hashCode(null), 0);
     assert.equal(typeof ObjectUtil.hashCode({}), 'number');
     assert.equal(ObjectUtil.hashCode(NaN), 0x7ff80000);
     assert.equal(ObjectUtil.hashCode(Infinity), 0x7ff00000);
     assert.equal(ObjectUtil.hashCode(-Infinity), 0xfff00000);
     assert.equal(typeof ObjectUtil.hashCode(1.5), 'number');
+    assert.equal(ObjectUtil.hashCode(1), 1);
     assert.equal(typeof ObjectUtil.hashCode(1n), 'number');
     assert.equal(typeof ObjectUtil.hashCode(Symbol('x')), 'number');
     assert.equal(typeof ObjectUtil.hashCode(() => 1), 'number');
     assert.equal(ObjectUtil.compare(null, null), 0);
     assert.equal(ObjectUtil.compare(null, 1, true), 1);
+    assert.equal(ObjectUtil.compare(null, 1), -1);
     assert.equal(ObjectUtil.compare(1, null, true), -1);
+    assert.equal(ObjectUtil.compare(1, null), 1);
     assert.equal(ObjectUtil.compare(1, 2), -1);
     assert.equal(ObjectUtil.compare(1, 1), 0);
     assert.equal(ObjectUtil.compare('a', 'b'), -1);
+    assert.equal(ObjectUtil.compare('b', 'a'), 1);
+    assert.equal(ObjectUtil.compare(2, 1), 1);
+    assert.equal(ObjectUtil.compare({ toString: () => 'a' }, { toString: () => 'b' }), -1);
     assert.equal(ObjectUtil.compare({}, {}), 1);
     assert.equal(ObjectUtil.isEmpty(''), true);
     assert.equal(ObjectUtil.isEmpty(null), true);
@@ -115,6 +136,13 @@ describe('ObjectUtil', () => {
     assert.equal(ObjectUtil.isEmpty({ size: 0 }), true);
     assert.equal(ObjectUtil.isEmpty({ isEmpty: () => true }), true);
     assert.equal(ObjectUtil.isEmpty({}), false);
+    assert.equal(ObjectUtil.identityToString(Object.create(null))?.startsWith('Object@'), true);
+    assert.equal(ObjectUtil.defaultIfNull('value', 'fallback'), 'value');
+    assert.equal(ObjectUtil.toString('value', 'fallback'), 'value');
+    assert.equal(
+      ObjectUtil.toStringWithSupplier('value', () => 'fallback'),
+      'value',
+    );
     assert.equal(
       ObjectUtil.getFirstNonNull(null, () => null),
       null,
@@ -128,6 +156,10 @@ describe('ObjectUtil', () => {
     assert.equal(ObjectUtil.mode(), null);
     assert.equal(ObjectUtil.mode(1, 2), null);
     assert.throws(() => ObjectUtil.median());
+    assert.equal(
+      ObjectUtil.median((left, right) => left - right, 3, 1, 2),
+      2,
+    );
     assert.throws(() => ObjectUtil.median(1, null as never));
     assert.throws(() => ObjectUtil.medianBy(null as never, 1));
     assert.throws(() => ObjectUtil.medianBy((left, right) => left - right, null as never));

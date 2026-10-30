@@ -15,33 +15,57 @@ describe('ClassUtil', () => {
     const compare = ClassUtil.comparator();
     assert.ok(compare(String, Number) !== 0);
   });
-  it('convertClassesToClassNames', () =>
-    assert.deepEqual(ClassUtil.convertClassesToClassNames([String, Number]), ['String', 'Number']));
-  it('convertClassNamesToClasses', () =>
-    assert.deepEqual(ClassUtil.convertClassNamesToClasses(['String', 'Number']), [String, Number]));
-  it('getAbbreviatedName', () => assert.equal(ClassUtil.getAbbreviatedName('java.lang.String', 5), 'j.l.String'));
+  it('convertClassesToClassNames', () => {
+    assert.deepEqual(ClassUtil.convertClassesToClassNames([String, Number]), ['String', 'Number']);
+    assert.deepEqual(ClassUtil.convertClassesToClassNames([Object.create(null)]), ['Object']);
+    assert.equal(ClassUtil.convertClassesToClassNames(null), null);
+  });
+  it('convertClassNamesToClasses', () => {
+    assert.deepEqual(ClassUtil.convertClassNamesToClasses(['String', 'Number']), [String, Number]);
+    assert.equal(ClassUtil.convertClassNamesToClasses(null), null);
+    assert.deepEqual(ClassUtil.convertClassNamesToClasses([null as never]), [null]);
+  });
+  it('getAbbreviatedName', () => {
+    assert.equal(ClassUtil.getAbbreviatedName('java.lang.String', 5), 'j.l.String');
+    assert.equal(ClassUtil.getAbbreviatedName('java.lang.String[]', 20), 'java.lang.String[]');
+  });
   it('getAllInterfaces', () => assert.deepEqual(ClassUtil.getAllInterfaces(Child), []));
   it('getAllSuperclasses', () => assert.ok(ClassUtil.getAllSuperclasses(Child)?.includes(Parent)));
   it('getCanonicalName', () => assert.equal(ClassUtil.getCanonicalName('[Ljava.lang.String;'), 'java.lang.String[]'));
   it('getClass', () => {
     assert.equal(ClassUtil.getClass('String'), String);
     assert.equal(ClassUtil.getClass('int'), Number);
+    assert.equal(ClassUtil.getClass({}, 'String'), String);
   });
   it('getClassStrict', () => assert.equal(ClassUtil.getClassStrict('String'), String));
-  it('getComponentType', () => assert.equal(ClassUtil.getComponentType([1, 2]), Number));
+  it('getComponentType', () => {
+    assert.equal(ClassUtil.getComponentType([1, 2]), Number);
+    assert.equal(ClassUtil.getComponentType([]), null);
+  });
   it('getName', () => assert.equal(ClassUtil.getName(String), 'String'));
   it('getPackageCanonicalName', () => assert.equal(ClassUtil.getPackageCanonicalName('java.lang.String'), 'java.lang'));
   it('getPackageName', () => assert.equal(ClassUtil.getPackageName('java.lang.String'), 'java.lang'));
-  it('getPublicMethod', () => assert.equal(ClassUtil.getPublicMethod(Child, 'greet'), Child.prototype.greet));
+  it('getPublicMethod', () => {
+    assert.equal(ClassUtil.getPublicMethod(Child, 'greet'), Child.prototype.greet);
+    assert.equal(ClassUtil.getPublicMethod(Child.prototype, 'greet'), Child.prototype.greet);
+  });
   it('getShortCanonicalName', () => assert.equal(ClassUtil.getShortCanonicalName('java.lang.String'), 'String'));
   it('getShortClassName', () => assert.equal(ClassUtil.getShortClassName('java.lang.String'), 'String'));
-  it('getSimpleName', () => assert.equal(ClassUtil.getSimpleName(Child), 'Child'));
+  it('getSimpleName', () => {
+    assert.equal(ClassUtil.getSimpleName(Child), 'Child');
+    assert.equal(ClassUtil.getSimpleName(null, 'fallback'), 'fallback');
+  });
   it('hierarchy', () => assert.ok(ClassUtil.hierarchy(Child).includes(Child)));
   it('isAssignable', () => assert.equal(ClassUtil.isAssignable(Child, Parent), true));
   it('isAssignableArray', () => assert.equal(ClassUtil.isAssignableArray([Child], [Parent]), true));
   it('isInnerClass', () => assert.equal(ClassUtil.isInnerClass('pkg.Outer$Inner'), true));
   it('isPrimitiveOrWrapper', () => assert.equal(ClassUtil.isPrimitiveOrWrapper(Number), true));
-  it('isPrimitiveWrapper', () => assert.equal(ClassUtil.isPrimitiveWrapper(String), true));
+  it('isPrimitiveWrapper', () => {
+    assert.equal(ClassUtil.isPrimitiveWrapper(String), true);
+    assert.equal(ClassUtil.isPrimitiveWrapper(BigInt), true);
+    assert.equal(ClassUtil.isPrimitiveWrapper(Symbol), true);
+    assert.equal(ClassUtil.isPrimitiveWrapper(Object), false);
+  });
   it('isPublic', () => assert.equal(ClassUtil.isPublic(Child), true));
   it('primitivesToWrappers', () => assert.deepEqual(ClassUtil.primitivesToWrappers(Number, String), [Number, String]));
   it('primitiveToWrapper', () => assert.equal(ClassUtil.primitiveToWrapper(Number), Number));
@@ -65,6 +89,8 @@ describe('ClassUtil', () => {
     assert.equal(ClassUtil.getAbbreviatedName('Short', 10), 'Short');
     assert.throws(() => ClassUtil.getAbbreviatedName('java.lang.String', 0));
     assert.equal(ClassUtil.getAbbreviatedName('[Ljava.lang.String;', 5), '[Lj.l.String;');
+    assert.equal(ClassUtil.getAbbreviatedName(Child, 5), 'Child');
+    assert.equal(ClassUtil.getAbbreviatedName('longpackage.x.C', 8), 'l.x.C');
     assert.equal(ClassUtil.getAllInterfaces(null), null);
     assert.equal(ClassUtil.getAllSuperclasses(null), null);
     assert.throws(() => ClassUtil.getPublicMethod(Child, 'missing'));
@@ -89,6 +115,9 @@ describe('ClassUtil', () => {
     (Parent as typeof Parent & { interfaces?: Function[] }).interfaces = [Interface, Interface];
     assert.deepEqual(ClassUtil.getAllInterfaces(Child), [Interface]);
     assert.ok(ClassUtil.hierarchy(Child, 'include').includes(Interface));
+    assert.ok(ClassUtil.hierarchy(Odd).includes(Odd));
+    assert.equal(ClassUtil.getCanonicalName(String), 'String');
+    assert.equal(ClassUtil.getAbbreviatedName('a.b.C', 5), 'a.b.C');
     assert.deepEqual(ClassUtil.convertClassNamesToClasses(['does.not.Exist']), [null]);
     assert.equal(ClassUtil.comparator()(String, String), 0);
   });

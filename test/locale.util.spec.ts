@@ -30,9 +30,11 @@ describe('LocaleUtil', () => {
     assert.deepEqual(LocaleUtil.localeLookupList(null, 'en_US').map(String), ['en_US']);
     assert.equal(LocaleUtil.toLocale({ language: 'de', region: 'DE' })?.toString(), 'de_DE');
     assert.equal(LocaleUtil.toLocale(new Intl.Locale('fr-FR'))?.language, 'fr');
+    assert.equal(LocaleUtil.toLocale(new Intl.Locale('en'))?.country, '');
     assert.equal(LocaleUtil.toLocale(LocaleUtil.toLocale('en_US'))?.country, 'US');
     assert.equal(LocaleUtil.isAvailableLocale(LocaleUtil.toLocale('en_US')), true);
     assert.equal(LocaleUtil.toLocale({ country: 'US' })?.toString(), '_US');
+    assert.equal(LocaleUtil.toLocale({ country: 'US', variant: 'POSIX' })?.toString(), '_US_POSIX');
     assert.equal(LocaleUtil.toLocale({ country: 'US' })?.toIntlLocale(), null);
     assert.equal(LocaleUtil.toLocale('US')?.toString(), '_US');
     assert.equal(LocaleUtil.toLocale('en')?.toString(), 'en');

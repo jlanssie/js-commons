@@ -171,12 +171,33 @@ describe('CollectionUtil', () => {
       },
     };
     assert.equal(CollectionUtil.addAll(pushOnly as never, 1), true);
+    const addOnly = {
+      values: [] as number[],
+      add(value: number) {
+        this.values.push(value);
+      },
+    };
+    assert.equal(CollectionUtil.addAll(addOnly as never, 1), true);
+    assert.equal(CollectionUtil.addAll(new Set([1]), [2, 3]), true);
+    assert.equal(CollectionUtil.addAll(new Set<number>(), null as never), true);
+    assert.equal(CollectionUtil.addAll(new Set<number>(), { 0: 4, length: 1 } as never), true);
+    assert.equal(CollectionUtil.addAll(new Set<number>(), { length: 0 } as never), false);
+    assert.equal(CollectionUtil.addAll(new Set([1]), [1]), false);
     assert.equal(CollectionUtil.size({ size: 2 }), 2);
     assert.equal(CollectionUtil.size({ length: 2 }), 2);
     assert.equal(CollectionUtil.size(new Set([1, 2])), 2);
     assert.equal(CollectionUtil.size(new Map([['a', 1]])), 1);
     assert.equal(CollectionUtil.size(new Uint8Array([1, 2])), 2);
     assert.equal(CollectionUtil.size({}), 0);
+    assert.equal(CollectionUtil.size(new URLSearchParams('a=1&b=2')), 2);
+    const iterable = {
+      *[Symbol.iterator]() {
+        yield 1;
+        yield 2;
+      },
+    };
+    assert.equal(CollectionUtil.size(iterable), 2);
+    assert.equal(CollectionUtil.size(null), 0);
     assert.equal(typeof CollectionUtil.hashCode(['text']), 'number');
     assert.equal(typeof CollectionUtil.hashCode([{}]), 'number');
     assert.deepEqual(CollectionUtil.collate([1, 1], [2], false), [1, 2]);
@@ -198,12 +219,56 @@ describe('CollectionUtil', () => {
       CollectionUtil.filter({} as never, () => true),
       false,
     );
+    assert.equal(CollectionUtil.filter([1], undefined as never), false);
     assert.throws(() => CollectionUtil.extractSingleton([]));
     assert.equal(CollectionUtil.get('abc', 1), 'b');
     assert.equal(CollectionUtil.get([1], -1), null);
     assert.equal(CollectionUtil.isFull({ isFull: () => false } as never), false);
+    assert.equal(CollectionUtil.isFull({ isFull: () => true } as never), true);
+    assert.equal(CollectionUtil.isFull({}), false);
     assert.equal(CollectionUtil.maxSize({ maxSize: () => 4 } as never), 4);
     assert.equal(CollectionUtil.maxSize({}), -1);
+    assert.equal(CollectionUtil.emptyIfNull(new Set([1]))[0], 1);
+    assert.equal(CollectionUtil.containsAny([1], {} as never), false);
+    assert.equal(CollectionUtil.get([1], 5), null);
+    assert.equal(CollectionUtil.hashCode(null), 0);
+    assert.equal(CollectionUtil.isSubCollection([1], []), false);
+    assert.equal(typeof CollectionUtil.hashCode([null, 'x', 1, {}]), 'number');
+    assert.equal(CollectionUtil.exists([1], undefined as never), false);
+    assert.equal(
+      CollectionUtil.exists([1], (value) => value === 1),
+      true,
+    );
+    assert.equal(CollectionUtil.find([1], undefined as never), null);
+    assert.equal(
+      CollectionUtil.find([1], (value) => value === 1),
+      1,
+    );
+    assert.equal(
+      CollectionUtil.find([1], () => false),
+      null,
+    );
+    assert.equal(
+      CollectionUtil.forAllButLastDo([1, 2], () => undefined),
+      2,
+    );
+    assert.equal(CollectionUtil.forAllButLastDo([1], undefined as never), null);
+    assert.equal(
+      CollectionUtil.forAllButLastDo([], () => undefined),
+      null,
+    );
+    assert.equal(
+      CollectionUtil.filterInverse([1, 2], (value) => value === 1),
+      true,
+    );
+    assert.equal(CollectionUtil.filterInverse([1], undefined as never), false);
+    assert.equal(CollectionUtil.matchesAll([1], undefined as never), false);
+    assert.equal(
+      CollectionUtil.matchesAll([1], (value) => value === 1),
+      true,
+    );
+    assert.deepEqual(CollectionUtil.select([1], undefined as never), []);
+    assert.deepEqual(CollectionUtil.selectRejected([1], undefined as never), []);
     const proxy = CollectionUtil.predicatedCollection([1], (value: number) => value > 0);
     assert.equal(proxy.length, 1);
     assert.throws(() => CollectionUtil.removeCount([1], -1, 1));

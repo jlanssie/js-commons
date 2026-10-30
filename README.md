@@ -12,12 +12,6 @@ npm install @jlanssie/js-commons
 
 ## Usage
 
-Create an `.npmrc` file in your repository and add the following content.
-
-```bash
-@jlanssie:registry=https://npm.pkg.github.com
-```
-
 Import the package in any JavaScript or TypeScript file.
 
 ```javascript
